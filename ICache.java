@@ -1,3 +1,5 @@
+import java.util.NoSuchElementException;
+
 /***
  * Interface for a simple memory cache ADT.  
  * @author CS 321
@@ -35,7 +37,7 @@ public interface ICache<T>
 	
 	/**
 	 * Removes the given target data from the cache.
-	 * @throws NoSuchElementException - if target not found 
+	 * @throws NoSuchElementException - if target not found
 	 * @param target - object of type T 
 	 */
 	void remove(T target);
