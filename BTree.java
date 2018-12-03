@@ -120,7 +120,26 @@ public class BTree<T> {
         if (root == null) {
             return null;
         }
-        return null;
+        if (value == root.value) {
+            if (root.LNode == null && root.RNode == null) {
+                return null;
+            }
+
+            if (root.RNode == null) {
+                return root.LNode;
+            }
+
+            if (root.LNode == null) {
+                return root.RNode;
+            }
+
+        }
+        if (value < root.value) {
+            return delete(root.LNode, value);
+        }
+        else
+        return delete(root.RNode, value);
+
     }
 
     public void itteratorInOrder(BTreeNode root) {
