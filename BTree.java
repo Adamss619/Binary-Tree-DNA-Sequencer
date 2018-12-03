@@ -17,10 +17,6 @@ public class BTree<T> {
         BTreeNode newNode = new BTreeNode(null);
     }
 
-    public void add(int value) {
-        root = insert(root, value);
-    }
-
     private void insert(BTreeNode currentRoot, int value) {
 
        if(currentRoot.numKeys()==degree){
