@@ -1,4 +1,3 @@
-
 public class TreeObject {
 
 	private long value;
@@ -10,7 +9,7 @@ public class TreeObject {
 		setValue(value);
 		setKey(key);
 	}
-	
+
 	/**
 	 * Sets value
 	 * @param val Value to be set
