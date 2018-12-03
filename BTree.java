@@ -1,3 +1,5 @@
+import java.lang.*;
+
 /**
  * BTree class is the ADT of a B-Tree
  *
@@ -13,15 +15,15 @@ public class BTree<T> {
     int degree;        //the number of TreeObjects stored in each node (max is the degree for keys and +1 for children)
 
     private void create(T tree) {
-        object = new TreeObject((Long) tree,0);
+        object = new TreeObject((Long) tree, 0);
         BTreeNode newNode = new BTreeNode(null);
     }
 
     private void insert(BTreeNode currentRoot, int value) {
 
-       if(currentRoot.numKeys()==degree){
+        if (currentRoot.numKeys() == degree) {
 
-       }
+        }
     }
 
     private void insertNonFull(BTreeNode currentRoot, int value) {
@@ -34,8 +36,9 @@ public class BTree<T> {
             currentRoot.RNode = insert(currentRoot.RNode, value);
         }
 
-        root =  currentRoot;
+        root = currentRoot;
     }
+
     private void splitChild(BTreeNode currentRoot, int value) {
 
     }
@@ -49,7 +52,7 @@ public class BTree<T> {
         if (root == null)
             return size;
         else
-            return  size + getSize(root.LNode)+getSize(root.RNode);
+            return size + getSize(root.LNode) + getSize(root.RNode);
     }
 
     private boolean contains(BTreeNode current, int value) {
@@ -57,7 +60,7 @@ public class BTree<T> {
             return false;
         if (value == current.getValue())
             return true;
-        if(value < current.getValue())
+        if (value < current.getValue())
             contains(current.LNode, value);
         else
             contains(current.RNode, value);

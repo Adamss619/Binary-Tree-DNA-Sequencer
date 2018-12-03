@@ -20,53 +20,67 @@ public class BTreeNode<T> {
 
     /**
      * constructor of BTreeNode
+     *
      * @param value
      */
-    public BTreeNode(T value){
-        children =new ArrayList<BTreeNode>();
-        keyArray =new ArrayList<BTreeNode>();
+    public BTreeNode(T value) {
+        children = new ArrayList<BTreeNode>();
+        keyArray = new ArrayList<BTreeNode>();
         this.value = value;
         this.key = 0;
         isLeaf = true;
 
     }
+
     public boolean isRoot() {
         return isRoot;
     }
+
     public void setIsRoot(boolean isRoot) {
         this.isRoot = isRoot;
     }
+
     public T getValue() {
         return value;
     }
+
     public void setValue(T value) {
         this.value = value;
     }
+
     public int getKey() {
         return key;
     }
+
     public void setKey(int key) {
         this.key = key;
     }
+
     public BTreeNode getLeftNode() {
         return children.get(key);
     }
+
     public void setLeftNode(BTreeNode LNode) {
         children.set(key, LNode);
     }
+
     public BTreeNode getRightNode() {
         return children.get(key + 1);
     }
+
     public void setRightNode(BTreeNode RNode) {
         children.set(key + 1, RNode);
     }
-    public boolean isLeaf(){
+
+    public boolean isLeaf() {
         return isLeaf;
     }
-    public void setIsLeaf(boolean isLeaf){
+
+    public void setIsLeaf(boolean isLeaf) {
         this.isLeaf = isLeaf;
     }
-    public int numKeys(){
+
+    public int numKeys() {
         return keyArray.size();
     }
 
