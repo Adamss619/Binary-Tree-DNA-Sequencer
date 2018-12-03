@@ -16,6 +16,7 @@ public class BTreeNode<T> {
     boolean isRoot;     //boolean if node is the main root node (only one)
     boolean isLeaf;     //boolean if node is a leaf
     int key;            //pointer to the values in the node
+    int size;
 
 
     /**
@@ -29,6 +30,8 @@ public class BTreeNode<T> {
         this.value = value;
         this.key = 0;
         isLeaf = true;
+        isRoot = true;
+        size=0;
 
     }
 
@@ -80,8 +83,11 @@ public class BTreeNode<T> {
         this.isLeaf = isLeaf;
     }
 
-    public int numKeys() {
-        return keyArray.size();
+    public int size() {
+        return size;
+    }
+    public void setSize(int size) {
+        this.size=size;
     }
 
 }
