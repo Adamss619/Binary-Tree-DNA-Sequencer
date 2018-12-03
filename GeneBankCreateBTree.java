@@ -41,7 +41,22 @@ public class GeneBankCreateBTree {
         if (args.length == 6)
             debugLevel = Integer.parseInt(args[4]);
 
-        Scanner fileScan = new Scanner()
+        Scanner fileScan = new Scanner(fileName);
+        BTreeNode root = new BTreeNode(fileScan.nextLong());
+        BTree btree = new BTree();
+        btree.root = root;
+        btree.degree = degree;
+        btree.cacheSize = cacheSize;
+
+        while (fileScan.hasNext()) {
+            for (int i = 0; i < degree; i++) {
+                btree.root.keyArray.get(i).getValue()
+
+            }
+            btree.root.keyArray.get(i)
+            BTreeNode node = new BTreeNode(fileScan.nextLong());
+            btree.insert(root, fileScan.nextLong());
+        }
 
 
     }

@@ -14,7 +14,7 @@ public class BTree<T> {
     int cacheSize;          //size of the cache
     int degree;        //the number of TreeObjects stored in each node (max is the degree for keys and +1 for children)
 
-    private void create(BTree tree) {
+    private void BTree(BTree tree) {
         BTreeNode newNode = new BTreeNode(null);
         newNode.setIsLeaf(true);
         newNode.setSize(0);
