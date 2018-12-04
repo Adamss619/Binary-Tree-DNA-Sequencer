@@ -86,8 +86,13 @@ public class BTreeNode<T> {
     public int size() {
         return size;
     }
+    
     public void setSize(int size) {
         this.size=size;
+    }
+    
+    public boolean hasChild(){
+        return (children.size > 0);
     }
 
 }
