@@ -45,4 +45,24 @@ public class GeneBankCreateBTree {
             }
         }
     }
+
+    private void printUsage() {
+        System.out.println
+                ("Usage: java GeneBankCreateBTree <with cache> <degree> <gbk file> <sequence length> < | cache size> < | debug level>");
+        System.out.println
+                ("<with cache>: 0 is without using a cache and 1 is use a cache.");
+        System.out.println
+                ("<degree>: minimum degree, t, to be used for the B-Tree. If 0, " +
+                        "then the optimum degree used is based on a disk block size of " +
+                        "4096 bytes and the size of your B-Tree node on disk.\n");
+        System.out.println
+                ("<gbk file>: the input file to be parsed");
+        System.out.println
+                ("<sequence length>: the length of gene sequences.");
+        System.out.println
+                ("<cache size>: the length of cache.");
+        System.out.println
+                ("<debug level>: 0 to print usage and 1 to create dump file ");
+        System.exit(1);
+    }
 }
