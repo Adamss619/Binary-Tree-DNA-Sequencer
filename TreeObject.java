@@ -7,6 +7,14 @@ public class TreeObject {
 	// constructor 
 	public TreeObject(long value, int key) {
 		setValue(value);
+        setFrequency(1);
+		setKey(key);
+	}
+    
+    //constructor that can set frequency
+    public TreeObject(long value, int key, int freq) {
+		setValue(value);
+        setFrequency(freq);
 		setKey(key);
 	}
 
@@ -49,5 +57,9 @@ public class TreeObject {
 	 */
 	public int getFrequencty() {
 		return this.frequency;
+	}
+    
+    	public int setFrequencty(int f) {
+		this.frequency = f;
 	}
 }
