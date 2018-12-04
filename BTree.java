@@ -26,7 +26,7 @@ public class BTree<T> {
      * @param debugLevel
      * @param cacheSize
      */
-    private void BTree(String fileName, int degree, int length, int debugLevel, int cacheSize) {
+    public BTree(String fileName, int degree, int length, int debugLevel, int cacheSize) {
 
 
         BTreeNode newNode = new BTreeNode(degree);
@@ -49,7 +49,7 @@ public class BTree<T> {
      * @param length
      * @param debugLevel
      */
-    private void BTree(String fileName, int degree, int length, int debugLevel) {
+    public BTree(String fileName, int degree, int length, int debugLevel) {
         BTreeNode newNode = new BTreeNode(degree);
         newNode.setIsLeaf(true);
         newNode.setSize(0);

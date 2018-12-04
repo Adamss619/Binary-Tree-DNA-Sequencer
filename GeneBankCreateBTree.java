@@ -25,12 +25,10 @@ public class GeneBankCreateBTree {
         BTree bTree;
         File file = new File(fileName);
         int count;
+        Scanner fileScan;
 
-        try {
-            Scanner fileScan = new Scanner(fileName);
-        } catch (FileNotFoundException e) {
-            printUsage();
-        }
+        fileScan = new Scanner(fileName);
+
         if (cacheSize > 0) {
             bTree = new BTree(fileName, degree, length, debugLevel, cacheSize);
         } else {
@@ -39,14 +37,14 @@ public class GeneBankCreateBTree {
         }
         while (fileScan.hasNext()) {
 
-            long nextSequence = fileScan.nextSubstring();
+            long nextSequence = fileScan.nextLong();
             if (nextSequence >= 0) {
                 bTree.insert(nextSequence);
             }
         }
     }
 
-    private void printUsage() {
+    private static void printUsage() {
         System.out.println
                 ("Usage: java GeneBankCreateBTree <with cache> <degree> <gbk file> <sequence length> < | cache size> < | debug level>");
         System.out.println
