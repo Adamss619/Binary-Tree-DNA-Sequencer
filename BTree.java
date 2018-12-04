@@ -14,14 +14,52 @@ public class BTree<T> {
     int cacheSize;          //size of the cache
     int degree;        //the number of TreeObjects stored in each node (max is the degree for keys and +1 for children)
     int DEFAULT;        //default degree
+    int length;
+    int debugLevel;
 
-    private void BTree(BTree tree, int degree, int cacheSize,) {
-        BTreeNode newNode = new BTreeNode(DEFAULT);
+    /**
+     * constructor for BTree with a cache
+     *
+     * @param fileName
+     * @param degree
+     * @param length
+     * @param debugLevel
+     * @param cacheSize
+     */
+    private void BTree(String fileName, int degree, int length, int debugLevel, int cacheSize) {
+
+
+        BTreeNode newNode = new BTreeNode(degree);
         newNode.setIsLeaf(true);
         newNode.setSize(0);
         newNode.setIsRoot(true);
-        tree.root = newNode;
+        this.root = newNode;
+        this.cacheSize = cacheSize;
+        this.useCache = true;
+        this.length = length;
+        this.debugLevel = debugLevel;
+
     }
+
+    /**
+     * constructor for BTree with no cache
+     *
+     * @param fileName
+     * @param degree
+     * @param length
+     * @param debugLevel
+     */
+    private void BTree(String fileName, int degree, int length, int debugLevel) {
+        BTreeNode newNode = new BTreeNode(degree);
+        newNode.setIsLeaf(true);
+        newNode.setSize(0);
+        newNode.setIsRoot(true);
+        this.root = newNode;
+        this.useCache = false;
+        this.length = length;
+        this.debugLevel = debugLevel;
+    }
+
 
     private void insert(BTreeNode currentRoot, TreeObject value) {
 
