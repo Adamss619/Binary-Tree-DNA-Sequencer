@@ -13,9 +13,10 @@ public class BTree<T> {
     boolean useCache;       //determin if we use a chace or not (not sure on this one)
     int cacheSize;          //size of the cache
     int degree;        //the number of TreeObjects stored in each node (max is the degree for keys and +1 for children)
+    int DEFAULT;        //default degree
 
-    private void BTree(BTree tree) {
-        BTreeNode newNode = new BTreeNode(null);
+    private void BTree(BTree tree, int degree, int cacheSize,) {
+        BTreeNode newNode = new BTreeNode(DEFAULT);
         newNode.setIsLeaf(true);
         newNode.setSize(0);
         newNode.setIsRoot(true);
@@ -26,7 +27,7 @@ public class BTree<T> {
 
         BTreeNode rootNode = currentRoot;
         if (currentRoot.size() == degree-1) {
-            BTreeNode newNode = new BTreeNode(null);
+            BTreeNode newNode = new BTreeNode(degree);
             currentRoot = newNode;
             newNode.setIsLeaf(false);
             newNode.setIsRoot(true);
@@ -145,9 +146,25 @@ public class BTree<T> {
     public void itteratorInOrder(BTreeNode root) {
         if (root != null) {
             itteratorInOrder(root.LNode);
-            System.out.print(" " + root.value);
+            System.out.print(" " + root);
             itteratorInOrder(root.RNode);
         }
+    }
+
+    public BTreeNode getRoot() {
+        return this.root;
+    }
+
+    public void setRoot(BTreeNode root) {
+        this.root = root;
+    }
+
+    public int getDegree() {
+        return this.degree;
+    }
+
+    public void setDegree(int degree) {
+        this.degree = degree;
     }
 }
 

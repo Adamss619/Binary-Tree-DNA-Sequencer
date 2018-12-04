@@ -8,9 +8,11 @@ import java.util.ArrayList;
 
 public class BTreeNode<T> {
 
-    T value;          //the current element to make the node
+    int degree;          //the current element to make the node
     ArrayList<BTreeNode> children;  //pointer to children keys
     ArrayList<BTreeNode> keyArray;   //array of the keys of each BTreeNode in the B-Tree
+    //  BTreeNode[] children;
+    // BTreeNode[] keyArray;
     BTreeNode LNode;        //left node
     BTreeNode RNode;        //right node
     boolean isRoot;     //boolean if node is the main root node (only one)
@@ -22,12 +24,14 @@ public class BTreeNode<T> {
     /**
      * constructor of BTreeNode
      *
-     * @param value
+     * @param degree
      */
-    public BTreeNode(T value) {
-        children = new ArrayList<BTreeNode>();
-        keyArray = new ArrayList<BTreeNode>();
-        this.value = value;
+    public BTreeNode(int degree) {
+        this.degree = degree;
+        children = new ArrayList<BTreeNode>(degree + 1);
+        keyArray = new ArrayList<BTreeNode>(degree);
+        // children=new BTreeNode[degree+1];
+        // keyArray=new BTreeNode[degree];
         this.key = 0;
         isLeaf = true;
         isRoot = true;
@@ -43,38 +47,69 @@ public class BTreeNode<T> {
         this.isRoot = isRoot;
     }
 
-    public T getValue() {
-        return value;
+    /*  public T getValue() {
+          return value;
+      }
+
+      public void setValue(T value) {
+          this.value = value;
+      }
+  */
+    public ArrayList<BTreeNode> getKeys() {
+        //your code here
+        return this.keyArray;
     }
 
-    public void setValue(T value) {
-        this.value = value;
+    //Method added by Devanshu
+    public void setKeys(ArrayList<BTreeNode> arrayList) {
+        this.keyArray = arrayList;
     }
 
-    public int getKey() {
-        return key;
+    public ArrayList<BTreeNode> getChildren() {
+        //your code here
+        return this.children;
     }
 
-    public void setKey(int key) {
-        this.key = key;
+    //Method added by Devanshu
+    public void setChildren(ArrayList<BTreeNode> arrayList) {
+        this.children = arrayList;
     }
 
-    public BTreeNode getLeftNode() {
-        return children.get(key);
+    public int getDegree() {
+        //your code here
+        return this.degree;
     }
 
-    public void setLeftNode(BTreeNode LNode) {
-        children.set(key, LNode);
+    //Method added by Devanshu
+    public void setDegree(int degree) {
+        this.degree = degree;
     }
 
     public BTreeNode getRightNode() {
         return children.get(key + 1);
     }
 
-    public void setRightNode(BTreeNode RNode) {
-        children.set(key + 1, RNode);
+    public BTreeNode getLeftNode() {
+        return children.get(key);
     }
 
+    /*
+        public BTreeNode getLeftNode() {
+        return children[key];
+    }
+
+        public void setLeftNode(BTreeNode LNode) {
+            children[key]= LNode;
+        }
+
+        public BTreeNode getRightNode() {
+            return children[key + 1];
+        }
+
+        public void setRightNode(BTreeNode RNode) {
+            children[key+1]= RNode;
+        }
+        */
     public boolean isLeaf() {
         return isLeaf;
     }

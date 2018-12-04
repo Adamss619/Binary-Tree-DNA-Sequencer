@@ -41,6 +41,9 @@ public class GeneBankCreateBTree {
         if (args.length == 6)
             debugLevel = Integer.parseInt(args[4]);
 
+        RandomAccessFile dump;
+        dump = new RandomAccessFile();
+
         Scanner fileScan = new Scanner(fileName);
         BTreeNode root = new BTreeNode(fileScan.nextLong());
         BTree btree = new BTree();
