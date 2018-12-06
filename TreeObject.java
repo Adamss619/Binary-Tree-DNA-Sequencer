@@ -1,65 +1,45 @@
 public class TreeObject {
 
-	private long value;
-	private int key;
-	private int frequency;
-	
+	private long key;
+	private int degree;
+
 	// constructor 
-	public TreeObject(long value, int key) {
-		setValue(value);
-        setFrequency(1);
-		setKey(key);
-	}
-    
-    //constructor that can set frequency
-    public TreeObject(long value, int key, int freq) {
-		setValue(value);
-        setFrequency(freq);
-		setKey(key);
+	public TreeObject(long key, int degree) {
+		setOffSet(key);
+		setDegree(degree);
 	}
 
 	/**
-	 * Sets value
-	 * @param val Value to be set
-	 */
-	public void setValue(long val) {
-		this.value = val;
-	}
-	
-	/**
 	 * Sets key
-	 * @param k key to be set
+	 * @param key Value to be set
 	 */
-	public void setKey(int k) {
-		
-		this.key = k;
+	public void setOffSet(long key) {
+		this.key = key;
 	}
 	
 	/**
-	 * Get the value 
-	 * @return Returns the value of an object
+	 * Sets degree
+	 * @param degree offSet to be set
 	 */
-	public long getValue() {
-		return this.value;
+	public void setDegree(int degree) {
+
+		this.degree = degree;
 	}
 	
 	/**
-	 * Get the key 
+	 * Get the key
 	 * @return Returns the key of an object
 	 */
-	public long getKey() {
+	public long getOffSet() {
 		return this.key;
 	}
 	
 	/**
-	 * Get the frequency of an object
-	 * @return Returns the frequency
+	 * Get the degree
+	 * @return Returns the degree of an object
 	 */
-	public int getFrequencty() {
-		return this.frequency;
+	public long getDegree() {
+		return this.degree;
 	}
-    
-    	public int setFrequencty(int f) {
-		this.frequency = f;
-	}
+
 }
