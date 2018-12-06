@@ -5,7 +5,7 @@ public class TreeObject {
 
 	// constructor 
 	public TreeObject(long key, int degree) {
-		setOffSet(key);
+		setKey(key);
 		setDegree(degree);
 	}
 
@@ -13,7 +13,7 @@ public class TreeObject {
 	 * Sets key
 	 * @param key Value to be set
 	 */
-	public void setOffSet(long key) {
+	public void setKey(long key) {
 		this.key = key;
 	}
 	
@@ -30,7 +30,7 @@ public class TreeObject {
 	 * Get the key
 	 * @return Returns the key of an object
 	 */
-	public long getOffSet() {
+	public long getKey() {
 		return this.key;
 	}
 	
@@ -38,7 +38,7 @@ public class TreeObject {
 	 * Get the degree
 	 * @return Returns the degree of an object
 	 */
-	public long getDegree() {
+	public int getDegree() {
 		return this.degree;
 	}
 

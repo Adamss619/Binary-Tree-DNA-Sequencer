@@ -18,10 +18,9 @@ public class BTreeNode<T> {
     protected long[] frequency; //array with the frequencys of the B-Tree nodes
     private boolean isRoot;     //boolean if node is the main root node (only one)
     private boolean isLeaf;     //boolean if node is a leaf
-    private int key;            //pointer to the values in the node
     private int degree;         //the current element to make the node
     private int size;           //current node size
-    private long fileKey;       //the offset value of the the files key
+    private long key;       //the offset value of the the files key
     private long parentKey;     //the offset value of the the root files
 
 
@@ -31,25 +30,32 @@ public class BTreeNode<T> {
      * @param object
      */
 
-
+    /**
+     * @param object
+     */
     public BTreeNode(TreeObject object) {
-        this.fileKey = object.getOffSet(); // address of this node in the file.
-        keyArray = new long[(2 * degree) - 1];
+        this.key = object.getKey(); // address of this node in the file.
+        this.degree = object.getDegree();
+        keyArray = new long[((2 * degree) - 1)];
         children = new long[2 * degree];
         frequency = new long[(2 * degree) - 1];
         isLeaf = false;
         size = 0;
-        this.degree = degree;
     }
 
-    public void setParent(long parentOffset) {
-        this.parentKey = parentOffset;
-    }
-
+    /**
+     *get the value of the children at the degree passed in
+     * @param i
+     * @return
+     */
     public long getChild(int i) {
         return children[i];
     }
 
+    /**
+     *checks if the current node has any children
+     * @return
+     */
     public boolean hasChildren() {
 
         for (int i = 0; i < (2 * degree) - 1; i++) {
@@ -60,38 +66,57 @@ public class BTreeNode<T> {
         return false;
     }
 
+    /**
+     *checks if the B-TreeNode is full
+     * @return
+     */
     public boolean isFull() {
         return size == (2 * degree) - 1;
     }
 
+    /**
+     *checks if the B-TreeNode is empty
+     * @return
+     */
     public boolean isEmpty() {
         return size == 0;
     }
 
-    public void setLeaf(Boolean isLeaf) {
+    /**
+     *checks if the B-TreeNode is a leaf
+     * @param isLeaf
+     */
+    public void setLeaf(boolean isLeaf) {
         this.isLeaf = isLeaf;
     }
 
+    /**
+     *returns the nodes size
+     * @return
+     */
     public int getCurrentSize() {
         return this.size;
     }
 
-    public long getFileKey() {
-        return this.fileKey;
-    }
-
-    public long getParentKey() {
-        return this.parentKey;
-    }
-
+    /**
+     *returns if the node is a leaf node or not
+     * @return
+     */
     public boolean getLeaf() {
         return isLeaf;
     }
 
+    /**
+     *set the size of the node
+     * @param i
+     */
     public void setCurrentSize(int i) {
         this.size = i;
     }
 
+    /**
+     *checks the current size then returns it
+     */
     public void generateCurrentSize() {
         boolean noKey = false;
         int size = 0;
@@ -107,18 +132,32 @@ public class BTreeNode<T> {
         size = size;
     }
 
+    /**
+     *compares the node with the current node
+     * @param node
+     * @return
+     */
     public boolean equals(BTreeNode node) {
-        return fileKey == node.getFileKey();
+        return key == node.key;
     }
 
+    /**
+     *compares the offset of the
+     * @param offset
+     * @return
+     */
     public boolean equalsKey(long offset) {
-        return fileKey == offset;
+        return key == offset;
     }
 
+    /**
+     *
+     * @return
+     */
     public String toString() {
 
         String retVal = "Node from memory \n";
-        retVal += "NodeOffset: " + fileKey + "\n";
+        retVal += "NodeOffset: " + key + "\n";
         retVal += "Current Size: " + size + "\n";
 
         if (isLeaf) {
