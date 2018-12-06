@@ -56,12 +56,11 @@ public class Parser {
 		return convert();
 	}
 		/**
-		 * Converts current string to DNA
+		 * Converts current string of DNA to Long
 		 * 
-		 * @return converted string to DNA notation
+		 * @return converted string of DNA notation to Long
 		 */
 	private long convert() {
-		// make subString into a binary long
 		int i = 0;
 		long returnConversion = 1;
 		String[] split = subString.split("");
