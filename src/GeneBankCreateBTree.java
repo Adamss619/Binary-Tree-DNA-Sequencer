@@ -1,3 +1,5 @@
+package src;
+
 import java.io.*;
 import java.util.Scanner;
 
@@ -7,7 +9,7 @@ public class GeneBankCreateBTree {
      *
      * @param args - String[]
      */
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         if (args.length < 4 || args.length > 6) {
             printUsage();
         }

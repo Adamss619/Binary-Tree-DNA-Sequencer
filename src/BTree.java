@@ -1,3 +1,4 @@
+
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -6,8 +7,8 @@ import java.io.PrintWriter;
 /**
  * BTree class is the ADT of a B-Tree
  *
- * @author justin, spencer, binod, alkinish                 //fix the butchered one name
  * @param <T>
+ * @author justin, spencer, binod, alkinish                 //fix the butchered one name
  */
 public class BTree<T> {
     private int degree;

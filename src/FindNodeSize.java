@@ -1,3 +1,4 @@
+
 public class FindNodeSize {
 
     private int degree; // variable t

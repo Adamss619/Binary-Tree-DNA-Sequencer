@@ -1,359 +1,361 @@
+
 import java.util.NoSuchElementException;
 
 public class TestBTreeCache {
 
-	private static BTreeCache<String> cache;
+    private static BTreeCache<String> cache;
 
-	private static int totalTestRun;
-	private static int testPassed;
-	private static int testFailed;
+    private static int totalTestRun;
+    private static int testPassed;
+    private static int testFailed;
 
-	private static final String validElement_1 = "A";
-	private static final String validElement_2 = "B";
-	private static final String validElement_3 = "C";
+    private static final String validElement_1 = "A";
+    private static final String validElement_2 = "B";
+    private static final String validElement_3 = "C";
 
-	/**
-	 * Default constructor
-	 */
-	public TestBTreeCache() {
+    /**
+     * Default constructor
+     */
+    public TestBTreeCache() {
 
-		totalTestRun = 0;
-		testPassed = 0;
-		testFailed = 0;
+        totalTestRun = 0;
+        testPassed = 0;
+        testFailed = 0;
 
-		runTests();
+        runTests();
 
-	}
+    }
 
-	/**
-	 * constructor with cache size
-	 * @param cacheSize Cache size
-	 */
-	public TestBTreeCache(int cacheSize) {
+    /**
+     * constructor with cache size
+     *
+     * @param cacheSize Cache size
+     */
+    public TestBTreeCache(int cacheSize) {
 
-		testEmptyCache();
-		testCacheWithOneElement();
-		testCacheWithTwoElements();
-		
-	}
+        testEmptyCache();
+        testCacheWithOneElement();
+        testCacheWithTwoElements();
 
-	/**
-	 * Run tests
-	 */
-	private void runTests() {
+    }
 
-		testEmptyCache();
-		testCacheWithOneElement();
-		testCacheWithTwoElements();
-		
-	}
+    /**
+     * Run tests
+     */
+    private void runTests() {
 
-	/**
-	 * Run cache tests with two elements
-	 */
-	private void testCacheWithTwoElements() {
+        testEmptyCache();
+        testCacheWithOneElement();
+        testCacheWithTwoElements();
 
-		cache = new BTreeCache<String>();
-		cache.add(validElement_1);
-		cache.add(validElement_2);
+    }
 
-		System.out.println("\n********************************************************\n");
-		System.out.println("Test Cache with two element...\n");
+    /**
+     * Run cache tests with two elements
+     */
+    private void testCacheWithTwoElements() {
 
-		testCacheWithTwoElements_addC_ABC();
-		testCacheWithTwoElements_getB(validElement_2);
-		testCacheWithTwoElements_removeLast();
-		testCacheWithTwoElements_removeB();
-		testCacheWithTwoElements_clear();
+        cache = new BTreeCache<String>();
+        cache.add(validElement_1);
+        cache.add(validElement_2);
 
-	}
+        System.out.println("\n********************************************************\n");
+        System.out.println("Test Cache with two element...\n");
 
-	
-	private void testCacheWithTwoElements_addC_ABC() {
+        testCacheWithTwoElements_addC_ABC();
+        testCacheWithTwoElements_getB(validElement_2);
+        testCacheWithTwoElements_removeLast();
+        testCacheWithTwoElements_removeB();
+        testCacheWithTwoElements_clear();
 
-		totalTestRun++;
+    }
 
-		cache.add(validElement_3);
 
-		if (cache.size() == 3) {
-			testPassed++;
-			System.out.println("Test: testCacheWithTwoElements_addC_ABC...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithTwoElements_addC_ABC...\t failed");
-		}
+    private void testCacheWithTwoElements_addC_ABC() {
 
-	}
+        totalTestRun++;
 
-	private void testCacheWithTwoElements_getB(String Expected) {
+        cache.add(validElement_3);
 
-		String result = cache.get(validElement_2);
+        if (cache.size() == 3) {
+            testPassed++;
+            System.out.println("Test: testCacheWithTwoElements_addC_ABC...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithTwoElements_addC_ABC...\t failed");
+        }
 
-		totalTestRun++;
+    }
 
-		if (result == Expected) {
-			testPassed++;
-			System.out.println("Test: testCacheWithTwoElements_getB...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithTwoElements_getB...\t failed");
-		}
+    private void testCacheWithTwoElements_getB(String Expected) {
 
-	}
+        String result = cache.get(validElement_2);
 
-	private void testCacheWithTwoElements_removeLast() {
+        totalTestRun++;
 
-		totalTestRun++;
+        if (result == Expected) {
+            testPassed++;
+            System.out.println("Test: testCacheWithTwoElements_getB...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithTwoElements_getB...\t failed");
+        }
 
-		cache.removeLast();
+    }
 
-		if (cache.size() == 2) {
-			testPassed++;
-			System.out.println("Test: testCacheWithTwoElements_removeLast...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithTwoElements_removeLast...\t failed");
-		}
+    private void testCacheWithTwoElements_removeLast() {
 
-	}
+        totalTestRun++;
 
-	private void testCacheWithTwoElements_removeB() {
+        cache.removeLast();
 
-		totalTestRun++;
+        if (cache.size() == 2) {
+            testPassed++;
+            System.out.println("Test: testCacheWithTwoElements_removeLast...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithTwoElements_removeLast...\t failed");
+        }
 
-		cache.remove(validElement_2);
+    }
 
-		if (cache.size() == 1) {
-			testPassed++;
-			System.out.println("Test: testCacheWithTwoElements_removeB...\t passed");
-			return;
-		}
+    private void testCacheWithTwoElements_removeB() {
 
-		testFailed++;
-		System.out.println("Test: testCacheWithTwoElements_removeB...\t failed");
+        totalTestRun++;
 
-	}
+        cache.remove(validElement_2);
 
-	private void testCacheWithTwoElements_clear() {
-		totalTestRun++;
-		cache.clear();
+        if (cache.size() == 1) {
+            testPassed++;
+            System.out.println("Test: testCacheWithTwoElements_removeB...\t passed");
+            return;
+        }
 
-		if (cache.isEmpty()) {
-			testPassed++;
-			System.out.println("Test: testCacheWithTwoElements_clear...\t passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithTwoElements_clear...\t failed");
-		}
+        testFailed++;
+        System.out.println("Test: testCacheWithTwoElements_removeB...\t failed");
 
-	}
+    }
 
-	private void testCacheWithOneElement() {
-		cache = new BTreeCache<String>();
-		cache.add(validElement_1);
+    private void testCacheWithTwoElements_clear() {
+        totalTestRun++;
+        cache.clear();
 
-		System.out.println("\n********************************************************\n");
-		System.out.println("Test Cache with one element...\n");
+        if (cache.isEmpty()) {
+            testPassed++;
+            System.out.println("Test: testCacheWithTwoElements_clear...\t passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithTwoElements_clear...\t failed");
+        }
 
-		testCacheWithOneElement_addB_BA();
-		testCacheWithOneElement_getA(validElement_1);
-		testCacheWithOneElement_removeLast();
-		testCacheWithOneElement_removeA();
-		testCacheWithOneElement_clear();
+    }
 
-	}
+    private void testCacheWithOneElement() {
+        cache = new BTreeCache<String>();
+        cache.add(validElement_1);
 
-	private void testCacheWithOneElement_addB_BA() {
+        System.out.println("\n********************************************************\n");
+        System.out.println("Test Cache with one element...\n");
 
-		totalTestRun++;
+        testCacheWithOneElement_addB_BA();
+        testCacheWithOneElement_getA(validElement_1);
+        testCacheWithOneElement_removeLast();
+        testCacheWithOneElement_removeA();
+        testCacheWithOneElement_clear();
 
-		cache.add(validElement_2);
+    }
 
-		if (cache.size() == 2) {
-			testPassed++;
-			System.out.println("Test: testCacheWithOneElement_addB_BA...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithOneElement_addB_BA...\t failed");
-		}
+    private void testCacheWithOneElement_addB_BA() {
 
-	}
+        totalTestRun++;
 
-	private void testCacheWithOneElement_getA(String Expected) {
-		String result = cache.get(validElement_1);
+        cache.add(validElement_2);
 
-		totalTestRun++;
+        if (cache.size() == 2) {
+            testPassed++;
+            System.out.println("Test: testCacheWithOneElement_addB_BA...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithOneElement_addB_BA...\t failed");
+        }
 
-		if (result == Expected) {
-			testPassed++;
-			System.out.println("Test: testCacheWithOneElement_getA...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithOneElement_getA...\t failed");
-		}
+    }
 
-	}
+    private void testCacheWithOneElement_getA(String Expected) {
+        String result = cache.get(validElement_1);
 
-	private void testCacheWithOneElement_removeLast() {
-		totalTestRun++;
+        totalTestRun++;
 
-		cache.removeLast();
+        if (result == Expected) {
+            testPassed++;
+            System.out.println("Test: testCacheWithOneElement_getA...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithOneElement_getA...\t failed");
+        }
 
-		if (cache.size() == 1) {
-			testPassed++;
-			System.out.println("Test: testCacheWithOneElement_removeLast...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithOneElement_removeLast...\t failed");
-		}
+    }
 
-	}
+    private void testCacheWithOneElement_removeLast() {
+        totalTestRun++;
 
-	private void testCacheWithOneElement_removeA() {
+        cache.removeLast();
 
-		totalTestRun++;
+        if (cache.size() == 1) {
+            testPassed++;
+            System.out.println("Test: testCacheWithOneElement_removeLast...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithOneElement_removeLast...\t failed");
+        }
 
-		cache.remove(validElement_1);
+    }
 
-		if (cache.size() == 0) {
-			testPassed++;
-			System.out.println("Test: testCacheWithOneElement_removeA...\t passed");
-			return;
-		}
+    private void testCacheWithOneElement_removeA() {
 
-		testFailed++;
-		System.out.println("Test: testCacheWithOneElement_removeA...\t failed");
+        totalTestRun++;
 
-	}
+        cache.remove(validElement_1);
 
-	private void testCacheWithOneElement_clear() {
-		totalTestRun++;
-		cache.clear();
+        if (cache.size() == 0) {
+            testPassed++;
+            System.out.println("Test: testCacheWithOneElement_removeA...\t passed");
+            return;
+        }
 
-		if (cache.isEmpty()) {
-			testPassed++;
-			System.out.println("Test: testCacheWithOneElement_clear...\t passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: testCacheWithOneElement_clear...\t failed");
-		}
+        testFailed++;
+        System.out.println("Test: testCacheWithOneElement_removeA...\t failed");
 
-	}
+    }
 
-	private void testEmptyCache() {
+    private void testCacheWithOneElement_clear() {
+        totalTestRun++;
+        cache.clear();
 
-		cache = new BTreeCache<String>();
+        if (cache.isEmpty()) {
+            testPassed++;
+            System.out.println("Test: testCacheWithOneElement_clear...\t passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: testCacheWithOneElement_clear...\t failed");
+        }
 
-		System.out.println("\n********************************************************\n");
-		System.out.println("Test Empty Cache...\n");
+    }
 
-		emptyCache_addA_A();
-		emptyCache_getA(validElement_1);
-		emptyCache_removeLast();
-		emptyCache_removeA();
-		emptyCache_clear();
+    private void testEmptyCache() {
 
-	}
+        cache = new BTreeCache<String>();
 
-	private void emptyCache_getA(String Expected) {
-		String result = cache.get(validElement_1);
+        System.out.println("\n********************************************************\n");
+        System.out.println("Test Empty Cache...\n");
 
-		totalTestRun++;
+        emptyCache_addA_A();
+        emptyCache_getA(validElement_1);
+        emptyCache_removeLast();
+        emptyCache_removeA();
+        emptyCache_clear();
 
-		if (result == Expected) {
-			testPassed++;
-			System.out.println("Test: emptyCache_getA...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: emptyCache_getA...\t failed");
-		}
-	}
+    }
 
-	private void emptyCache_addA_A() {
+    private void emptyCache_getA(String Expected) {
+        String result = cache.get(validElement_1);
 
-		totalTestRun++;
+        totalTestRun++;
 
-		cache.add(validElement_1);
+        if (result == Expected) {
+            testPassed++;
+            System.out.println("Test: emptyCache_getA...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: emptyCache_getA...\t failed");
+        }
+    }
 
-		if (cache.size() == 1) {
-			testPassed++;
-			System.out.println("Test: emptyCache_addA_A...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: emptyCache_addA_A...\t failed");
-		}
-	}
+    private void emptyCache_addA_A() {
 
-	private void emptyCache_removeLast() {
+        totalTestRun++;
 
-		totalTestRun++;
+        cache.add(validElement_1);
 
-		cache.removeLast();
+        if (cache.size() == 1) {
+            testPassed++;
+            System.out.println("Test: emptyCache_addA_A...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: emptyCache_addA_A...\t failed");
+        }
+    }
 
-		if (cache.size() == 0) {
-			testPassed++;
-			System.out.println("Test: emptyCache_removeLast...\t Passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: emptyCache_removeLast...\t failed");
-		}
-	}
+    private void emptyCache_removeLast() {
 
-	private void emptyCache_removeA() {
+        totalTestRun++;
 
-		totalTestRun++;
+        cache.removeLast();
 
-		try {
-			cache.remove(validElement_1);
+        if (cache.size() == 0) {
+            testPassed++;
+            System.out.println("Test: emptyCache_removeLast...\t Passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: emptyCache_removeLast...\t failed");
+        }
+    }
 
-		} catch (NoSuchElementException e) {
+    private void emptyCache_removeA() {
 
-			testPassed++;
-			System.out.println("Test: emptyCache_removeA...\t passed");
-			return;
-		}
+        totalTestRun++;
 
-		testFailed++;
-		System.out.println("Test: emptyCache_removeA...\t failed");
-	}
+        try {
+            cache.remove(validElement_1);
 
-	private void emptyCache_clear() {
+        } catch (NoSuchElementException e) {
 
-		totalTestRun++;
-		cache.clear();
+            testPassed++;
+            System.out.println("Test: emptyCache_removeA...\t passed");
+            return;
+        }
 
-		if (cache.isEmpty()) {
-			testPassed++;
-			System.out.println("Test: emptyCache_clear...\t passed");
-		} else {
-			testFailed++;
-			System.out.println("Test: emptyCache_clear...\t failed");
-		}
+        testFailed++;
+        System.out.println("Test: emptyCache_removeA...\t failed");
+    }
 
-	}
-	
-	public static void printSummary() {
-		
-		System.out.println("\n*******************************************");
-		System.out.println("* Total Tests Run: " + totalTestRun);
-		System.out.println("* Test Passed: " + testPassed);
-		System.out.println("* Tests Failed: " + testFailed);
-		System.out.println("*******************************************");
-			
-	}
+    private void emptyCache_clear() {
 
-	public static void main(String[] args) {
+        totalTestRun++;
+        cache.clear();
 
-		System.out.println("\nTest BTreeCache with default Cache size...\n");
+        if (cache.isEmpty()) {
+            testPassed++;
+            System.out.println("Test: emptyCache_clear...\t passed");
+        } else {
+            testFailed++;
+            System.out.println("Test: emptyCache_clear...\t failed");
+        }
 
-		new TestBTreeCache();
-		
-		System.out.println("\nTest BTreeCache with Cache size of 5...\n");
-		
-		new TestBTreeCache(5);
-		
-		printSummary();
+    }
 
-	}
+    public static void printSummary() {
+
+        System.out.println("\n*******************************************");
+        System.out.println("* Total Tests Run: " + totalTestRun);
+        System.out.println("* Test Passed: " + testPassed);
+        System.out.println("* Tests Failed: " + testFailed);
+        System.out.println("*******************************************");
+
+    }
+
+    public static void main(String[] args) {
+
+        System.out.println("\nTest BTreeCache with default Cache size...\n");
+
+        new TestBTreeCache();
+
+        System.out.println("\nTest BTreeCache with Cache size of 5...\n");
+
+        new TestBTreeCache(5);
+
+        printSummary();
+
+    }
 
 }
