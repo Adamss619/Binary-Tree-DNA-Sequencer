@@ -77,7 +77,7 @@ public class TestBTreeCache {
 
         cache.add(validElement_3);
 
-        if (cache.size() == 3) {
+        if (cache.getSize() == 3) {
             testPassed++;
             System.out.println("Test: testCacheWithTwoElements_addC_ABC...\t Passed");
         } else {
@@ -109,7 +109,7 @@ public class TestBTreeCache {
 
         cache.removeLast();
 
-        if (cache.size() == 2) {
+        if (cache.getSize() == 2) {
             testPassed++;
             System.out.println("Test: testCacheWithTwoElements_removeLast...\t Passed");
         } else {
@@ -125,7 +125,7 @@ public class TestBTreeCache {
 
         cache.remove(validElement_2);
 
-        if (cache.size() == 1) {
+        if (cache.getSize() == 1) {
             testPassed++;
             System.out.println("Test: testCacheWithTwoElements_removeB...\t passed");
             return;
@@ -171,7 +171,7 @@ public class TestBTreeCache {
 
         cache.add(validElement_2);
 
-        if (cache.size() == 2) {
+        if (cache.getSize() == 2) {
             testPassed++;
             System.out.println("Test: testCacheWithOneElement_addB_BA...\t Passed");
         } else {
@@ -201,7 +201,7 @@ public class TestBTreeCache {
 
         cache.removeLast();
 
-        if (cache.size() == 1) {
+        if (cache.getSize() == 1) {
             testPassed++;
             System.out.println("Test: testCacheWithOneElement_removeLast...\t Passed");
         } else {
@@ -217,7 +217,7 @@ public class TestBTreeCache {
 
         cache.remove(validElement_1);
 
-        if (cache.size() == 0) {
+        if (cache.getSize() == 0) {
             testPassed++;
             System.out.println("Test: testCacheWithOneElement_removeA...\t passed");
             return;
@@ -277,7 +277,7 @@ public class TestBTreeCache {
 
         cache.add(validElement_1);
 
-        if (cache.size() == 1) {
+        if (cache.getSize() == 1) {
             testPassed++;
             System.out.println("Test: emptyCache_addA_A...\t Passed");
         } else {
@@ -292,7 +292,7 @@ public class TestBTreeCache {
 
         cache.removeLast();
 
-        if (cache.size() == 0) {
+        if (cache.getSize() == 0) {
             testPassed++;
             System.out.println("Test: emptyCache_removeLast...\t Passed");
         } else {

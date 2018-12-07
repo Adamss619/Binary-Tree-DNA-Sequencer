@@ -11,17 +11,19 @@ import java.io.PrintWriter;
  * @author justin, spencer, binod, alkinish                 //fix the butchered one name
  */
 public class BTree<T> {
-    private int degree;
-    private int sequenceLength;
-    private int debugLevel;
-    private int nodeSize;
-    private long offset;
+
     private BTreeNode<T> root;
     private FindNodeSize size;
     private GeneticFileConstructor readWrite;
     private PrintWriter Pwriter;
     private final long BTREE_METADATA = 16;
     private String fileName;
+    private int degree;
+    private int sequenceLength;
+    private int debugLevel;
+    private int nodeSize;
+    private long offset;
+
 
     /**
      * BTree constructor without a cache takes in the parameters to create the first root node of the BTree

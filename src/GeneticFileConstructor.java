@@ -236,8 +236,8 @@ public class GeneticFileConstructor {
 
         bTreeFileData.seek(nodeOffset);
         BTreeNode returnNode = new BTreeNode(degree, bTreeFileData.readLong());
-        returnNode.setLeaf(bTreeFileData.readBoolean());
         returnNode.setSize(bTreeFileData.readInt());
+        returnNode.setLeaf(bTreeFileData.readBoolean());
 
         for (int i = 0; i < ((2 * degree) - 1); i++) {
 
