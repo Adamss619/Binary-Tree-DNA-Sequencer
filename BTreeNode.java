@@ -1,7 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 
 /**
@@ -9,179 +5,106 @@ import java.util.ArrayList;
  *
  * @param <T>
  */
+class BTreeNode<T> {
 
-public class BTreeNode<T> {
-
-    private BTreeNode[] child;
-    protected long[] children;  //array with the pointer to children keys
-    protected long[] keyArray;  //array of the keys of each BTreeNode in the B-Tree
-    protected long[] frequency; //array with the frequencys of the B-Tree nodes
-    private boolean isRoot;     //boolean if node is the main root node (only one)
-    private boolean isLeaf;     //boolean if node is a leaf
-    private int degree;         //the current element to make the node
-    private int size;           //current node size
-    private long key;       //the offset value of the the files key
-    private long parentKey;     //the offset value of the the root files
+    private ArrayList<T> parents;
+    private ArrayList<Integer> children;
+    private int parentKey;
+    private int keyCount;
+    private int offset;
+    private boolean isLeaf;
 
 
-    /**
-     * constructor of BTreeNode
-     *
-     * @param object
-     */
-
-    /**
-     * @param object
-     */
     public BTreeNode(TreeObject object) {
-        this.key = object.getKey(); // address of this node in the file.
-        this.degree = object.getDegree();
-        keyArray = new long[((2 * degree) - 1)];
-        children = new long[2 * degree];
-        frequency = new long[(2 * degree) - 1];
-        isLeaf = false;
-        size = 0;
+        parents = new ArrayList<T>();
+        children = new ArrayList<Integer>();
+        setKeyCount(0);
+        setParentKey(-1);
     }
 
-    /**
-     *get the value of the children at the degree passed in
-     * @param i
-     * @return
-     */
-    public long getChild(int i) {
-        return children[i];
+    public int getKeyCount() {
+        return keyCount;
     }
 
-    /**
-     *checks if the current node has any children
-     * @return
-     */
-    public boolean hasChildren() {
-
-        for (int i = 0; i < (2 * degree) - 1; i++) {
-            if (children[i] != 0) {
-                return true;
-            }
-        }
-        return false;
+    public void setKeyCount(int numKeys) {
+        this.keyCount = numKeys;
     }
 
-    /**
-     *checks if the B-TreeNode is full
-     * @return
-     */
-    public boolean isFull() {
-        return size == (2 * degree) - 1;
+    public int getOffset() {
+        return offset;
     }
 
-    /**
-     *checks if the B-TreeNode is empty
-     * @return
-     */
-    public boolean isEmpty() {
-        return size == 0;
+    public void setOffset(int offset) {
+        this.offset = offset;
     }
 
-    /**
-     *checks if the B-TreeNode is a leaf
-     * @param isLeaf
-     */
-    public void setLeaf(boolean isLeaf) {
-        this.isLeaf = isLeaf;
+    public int getParentKey() {
+        return parentKey;
     }
 
-    /**
-     *returns the nodes size
-     * @return
-     */
-    public int getCurrentSize() {
-        return this.size;
+    public void setParentKey(int parentKey) {
+        this.parentKey = parentKey;
     }
 
-    /**
-     *returns if the node is a leaf node or not
-     * @return
-     */
-    public boolean getLeaf() {
+    public T getParents(int keyValue) {
+        T object = parents.get(keyValue);
+        return object;
+    }
+
+    public void addParent(T dataObject) {
+        parents.add(dataObject);
+    }
+
+    public void addParent(T dataObject, int keyValue) {
+        parents.add(keyValue, dataObject);
+    }
+
+    public T removeParent(int keyValue) {
+        return parents.remove(keyValue);
+    }
+
+    public ArrayList<T> getParents() {
+        return parents;
+    }
+
+    public int getChild(int childKey) {
+        return children.get(childKey).intValue();
+    }
+
+    public void addChild(int childKey) {
+        children.add(childKey);
+    }
+
+    public void addChild(Integer location, int childKey) {
+        children.add(childKey, location);
+    }
+
+    public int removeChild(int childKey) {
+        return children.remove(childKey);
+    }
+
+    public ArrayList<Integer> getChildren() {
+        return children;
+    }
+
+    public boolean isLeaf() {
         return isLeaf;
     }
 
-    /**
-     *set the size of the node
-     * @param i
-     */
-    public void setCurrentSize(int i) {
-        this.size = i;
+    public void setIsLeaf(boolean isLeaf) {
+        this.isLeaf = isLeaf;
     }
 
-    /**
-     *checks the current size then returns it
-     */
-    public void generateCurrentSize() {
-        boolean noKey = false;
-        int size = 0;
-        int i = 0;
-        while (!noKey && i < ((2 * degree) - 1)) {
-            if (keyArray[i] > 0) {
-                size++;
-                i++;
-            } else {
-                noKey = true;
-            }
-        }
-        size = size;
-    }
-
-    /**
-     *compares the node with the current node
-     * @param node
-     * @return
-     */
-    public boolean equals(BTreeNode node) {
-        return key == node.key;
-    }
-
-    /**
-     *compares the offset of the
-     * @param offset
-     * @return
-     */
-    public boolean equalsKey(long offset) {
-        return key == offset;
-    }
-
-    /**
-     *
-     * @return
-     */
     public String toString() {
-
-        String retVal = "Node from memory \n";
-        retVal += "NodeOffset: " + key + "\n";
-        retVal += "Current Size: " + size + "\n";
-
-        if (isLeaf) {
-            retVal += "Leaf \n";
-        } else {
-            retVal += "Not Leaf \n";
+        String s = new String();
+        s += "Keys: ";
+        for (int i = 0; i < parents.size(); i++) {
+            s += (parents.get(i) + " ");
         }
-
-        retVal += "Keys in node: \n";
-        for (int j = 0; j < (2 * degree) - 1; j++) {
-            retVal += "Key: " + keyArray[j] + "\n";
+        s += "\nchildren: ";
+        for (int i = 0; i < children.size(); i++) {
+            s += (children.get(i) + " ");
         }
-        retVal += "frequency of keys: \n";
-        for (int j = 0; j < (2 * degree) - 1; j++) {
-            retVal += "Freq: " + frequency[j] + "\n";
-        }
-        retVal += "Children: \n";
-        for (int j = 0; j < (2 * degree); j++) {
-            retVal += "Child: " + children[j] + "\n";
-        }
-        retVal += "Parent Node: \n";
-        retVal += parentKey;
-        return retVal;
-
+        return s;
     }
-
 }

@@ -30,7 +30,6 @@ public class BTree<T> {
 
 
         BTreeNode newNode = new BTreeNode(degree);
-        newNode.setIsLeaf(true);
         newNode.setSize(0);
         newNode.setIsRoot(true);
         this.root = newNode;
