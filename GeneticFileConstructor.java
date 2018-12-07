@@ -217,7 +217,7 @@
 		public BTreeNode readData(long nodeOffset) throws IOException {
 			BTreeNode returnNode;
 
-			returnNode = readFromFile(nodeOffset);
+			returnNode = readMetaData(nodeOffset);
 			return returnNode;
 		}
 
@@ -236,12 +236,12 @@
 			
 			bTreeFileData.writeLong(writenNode.getOffset());
 
-			bTreeFileData.writeInt(writenNode.getCurrentSize());
+			bTreeFileData.writeInt(writenNode.getSize());
 			
 			bTreeFileData.writeBoolean(writenNode.getLeaf());
 
 			for (int i = 0; i < ((2 * degree) - 1); i++) {
-				bTreeFileData.writeLong(writenNode.keySequence[i]);
+				bTreeFileData.writeLong(writenNode.keyArray[i]);
 			}
 			for (int i = 0; i < ((2 * degree) - 1); i++) {
 				bTreeFileData.writeLong(writenNode.frequency[i]);
@@ -264,21 +264,20 @@
 		public BTreeNode readMetaData(long nodeOffset) throws IOException {
 
 			bTreeFileData.seek(nodeOffset);
-			
 			BTreeNode returnNode = new BTreeNode(degree, bTreeFileData.readLong());
 			returnNode.setLeaf(bTreeFileData.readBoolean());
-			returnNode.setCurrentSize(bTreeFileData.readInt());
+			returnNode.setSize(bTreeFileData.readInt());
 
 			for (int i = 0; i < ((2 * degree) - 1); i++) {
-				
-				returnNode.keySequence[i] = bTreeFileData.readLong();
+
+				returnNode.keyArray[i] = bTreeFileData.readLong();
 			}
 			for (int i = 0; i < ((2 * degree) - 1); i++) {
-				
+
 				returnNode.frequency[i] = bTreeFileData.readLong();
 			}
 			for (int i = 0; i < (2 * degree); i++) {
-				
+
 				returnNode.children[i] = bTreeFileData.readLong();
 			}
 			

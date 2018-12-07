@@ -4,19 +4,17 @@ public class TreeObject implements Comparable<TreeObject> {
 
 	private int degree;
 	private long data;
+	private int frequancy;
 
-	public TreeObject(long d, int degree) {
+
+	public TreeObject(long data, int degree, int frequancy) {
+		this.frequancy = frequancy;
 		this.degree = degree;
-		data = d;
+		this.data = data;
 	}
 
-	public TreeObject(long d) {
-		degree = 1;
-		data = d;
-	}
-
-	public void increaseDegree() {
-		degree++;
+	public void increaseFrequancy() {
+		frequancy++;
 	}
 
 	public int getDegree() {
@@ -25,6 +23,14 @@ public class TreeObject implements Comparable<TreeObject> {
 
 	public void setDegree(int degree) {
 		this.degree = degree;
+	}
+
+	public int getFrequancy() {
+		return frequancy;
+	}
+
+	public void setFrequancy(int frequancy) {
+		this.frequancy = frequancy;
 	}
 
 	public long getData() {

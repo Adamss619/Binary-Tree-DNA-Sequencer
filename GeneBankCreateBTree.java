@@ -7,7 +7,7 @@ public class GeneBankCreateBTree {
      *
      * @param args - String[]
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         if (args.length < 4 || args.length > 6) {
             printUsage();
         }

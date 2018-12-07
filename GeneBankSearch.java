@@ -43,17 +43,17 @@ public class GeneBankSearch {
 	 */
 	private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) throws IOException {
 		int x = 0;
-		
-		while (x < (beginNode.getCurrentSize()) && keyNodeSearch > beginNode.keySequence[x]) {
+
+		while (x < (beginNode.getSize()) && keyNodeSearch > beginNode.keyArray[x]) {
 			
 			x++;
 		}
-		if (x < beginNode.getCurrentSize() && keyNodeSearch == beginNode.keySequence[x]) {
+		if (x < beginNode.getSize() && keyNodeSearch == beginNode.keyArray[x]) {
 			if (debug == 1) {
-				
-				printWriter.println(sequenceDecoder(beginNode.keySequence[x]) + ": " + beginNode.frequency[x]);
+
+				printWriter.println(sequenceDecoder(beginNode.keyArray[x]) + ": " + beginNode.frequency[x]);
 			}
-			return sequenceDecoder(beginNode.keySequence[x]) + ": " + beginNode.frequency[x];
+			return sequenceDecoder(beginNode.keyArray[x]) + ": " + beginNode.frequency[x];
 			
 		} else if (beginNode.getLeaf())
 			
@@ -214,7 +214,7 @@ private void parserOfArguments(String[] args) {
 	private void printUsage(String error) {
 		
 		System.err.println(error);
-		System.out.println("");
+		System.out.println();
 
 		System.out.println(
 				"<0/1 (no/with Cache)>: 	A 0 declares that there will be no cache, while a 1 declares a cache");
