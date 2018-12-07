@@ -313,4 +313,8 @@ public class BTreeCache<T> implements ICache<T> {
 
         return str;
     }
+
+    public int getSize() {
+        return size;
+    }
 }
