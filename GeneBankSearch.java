@@ -1,204 +1,230 @@
+import java.io.FileNotFoundException;
 import java.io.File;
+import java.util.IllegalFormatException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Scanner;
-import java.util.StringTokenizer;
+import java.io.PrintWriter;
+
+/**
+ * parses through a B-Tree for specific query files. If found program
+ * will print the DNA sequence. Will inform you if file cannot be found in directory.
+ * 
+ * @author Spencer, Justin, Binod, Akhilesh
+ */
 
 public class GeneBankSearch {
 	
-	private static Scanner queryFile;
-	private static Scanner bTreeFile;
-	public static final int A = 0; //00 
-	public static final int T = 3; //11
-	public static final int C = 1; //01
-	public static final int G = 2; //10
+	private int degree, debug;
 	
+	private String BTreeName, QueryName;
+	private PrintWriter printWriter;
+	
+	private File beTreeFile, queryFileObject;
+	private GeneticFileConstructor dataReader;
+    
+	public GeneBankSearch(String[] args) {
+		parserOfArguments(args);
+		findAndStore();
+	}
+
 	public static void main(String[] args) {
-		String queryFilename = null;
-		String bTreeFilename = null;
-		int querySequenceLength = 0;
-		boolean cache = false;
-		int cacheSize = 0;
-		boolean debugMode = false;
-		boolean debug0 = true;
-		int btreeSequenceLength =0;
-		StringBuilder debugMsg = new StringBuilder();
+		new GeneBankSearch(args);
+	}
+	
+	
+	/**
+	 * search through b-tree for a specific key value
+	 * 
+	 * @param beginNode - node in which search will begin from
+	 * @param keyNodeSearch - key value we are searching for
+	 * @return long value if value is found
+	 * @throws IOException
+	 */
+	private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) throws IOException {
+		int x = 0;
 		
-		//Checking the command line arguments
-		if (args.length < 3 || args.length > 5) {
-			System.out.println("vsadasdasd");
-			printUsage();
+		while (x < (beginNode.getCurrentSize()) && keyNodeSearch > beginNode.keySequence[x]) {
+			
+			x++;
 		}
-		
-		try{
-			if(Integer.parseInt(args[0]) == 0) {
-				cache = false;
-				debugMsg.append("Not using cache option\n");
-			} else if (Integer.parseInt(args[0]) == 1){
-				cache = true;
-				debugMsg.append("Using cache option\n");
-			} else {
-				System.out.println("vasdas");
-				printUsage();
+		if (x < beginNode.getCurrentSize() && keyNodeSearch == beginNode.keySequence[x]) {
+			if (debug == 1) {
 				
+				printWriter.println(sequenceDecoder(beginNode.keySequence[x]) + ": " + beginNode.frequency[x]);
 			}
+			return sequenceDecoder(beginNode.keySequence[x]) + ": " + beginNode.frequency[x];
 			
-			//Getting the btree file from the disk: args[1]
-			try{
-				
-				bTreeFilename = args[1];
-				debugMsg.append("Provided B-Tree filename: " + bTreeFilename + "\n");
-				
-				String[] splits = bTreeFilename.split("\\.");
-				btreeSequenceLength = Integer.parseInt(splits[4]); 
-				debugMsg.append("Sequence Length from B-Tree filename: " + btreeSequenceLength + "\n");
+		} else if (beginNode.getLeaf())
 			
-			} catch (Exception e) {
-				System.err.println("The B-tree file was not found!\n");
-				//System.out.println("vASas");
-				printUsage();
+			return null;
+		else {
+			return keyValueNodeSearch(dataReader.readData(beginNode.children[x]), keyNodeSearch);
+		}
+	}
+	
+	/**
+	 * parser of data and will print value if found. 
+	 * Will inform user if data is not supplied correctly
+	 */
+	private void findAndStore() {
+		try {
+			long keyValue = 0;
+			String DNA;
+
+			Scanner scanQuery = new Scanner(queryFileObject);
+			dataReader = new GeneticFileConstructor(beTreeFile);
+			
+			if (debug == 1) {
+				outputFileConstructor();
 			}
+			long rootLocation = dataReader.rootFinder();
+			int sequenceLength = dataReader.getLengthOfSequence();
 			
-			//Get the query file to parse: args[2]
-			try {
-				queryFilename = args[2];
-				queryFile = new Scanner(new File(queryFilename));
-				debugMsg.append("Provided query filename: " + queryFilename + "\n");
-				
-				if(queryFilename.length() > 5) {
-					querySequenceLength = Integer.parseInt(queryFilename.substring(5));
-					if(querySequenceLength != btreeSequenceLength){
-						//System.out.println("vasas");
-						printUsage();
-						
-					}
-					debugMsg.append("Sequence Length from query filename: " + querySequenceLength + "\n");
+			this.degree = dataReader.getDegree();
+			dataReader.setDegree(degree);
+			
+			while (scanQuery.hasNextLine()) {
+				String geneticSequence = scanQuery.nextLine();
+
+				if (sequenceLength != geneticSequence.length()) {
+					throw new IOException();
 				}
-			} catch (Exception e){
-				//System.out.println("vaa");
-				printUsage();
-				
+
+				keyValue = convert(geneticSequence);
+				DNA = keyValueNodeSearch(dataReader.readData(rootLocation), keyValue);
+				if (DNA != null)
+
+					System.out.println(DNA);
 			}
-			
-			if(args.length >= 3 || args.length <= 5) {
-				if(args.length == 3 & cache) {
-					System.out.println("v");
-					printUsage();
-					
-				}
-				
-				if (args.length == 4 && cache && Integer.parseInt(args[3]) > 0) {
-					cacheSize = Integer.parseInt(args[3]);
-					debugMsg.append("The size of cache is: " + cacheSize + "\n");
-					debug0 = true;
-					debugMsg.append("Debug mode 0 is on.\n");
-				} else if (args.length == 4) {
-					if (Integer.parseInt(args[3]) == 0) {
-						debug0 = true;
-						debugMode = true;
-						debugMsg.append("Debug mode 0 is on.\n");
-					} else {
-						System.out.println("q");
-						printUsage();
-						
-					}
-				}
-			
-			//Debug level: args[4]
-			if (args.length == 5 && !debugMode && cache) {
-				if (Integer.parseInt(args[4]) == 0) {
-					debug0 = true;
-					debugMsg.append("Debug mode 0 is on.\n");
-				} else {
-					debugMode = true;
-					debugMsg.append("Debug Mode 0\n");
-				}
+			if (debug == 1) {
+				System.out.println("The Results File (" + BTreeName + " " + QueryName + " ) has been created.");
 			}
-			} else {
-				System.out.println("a");
-				printUsage();
-				
-			}
-			
-		}catch (Exception e) {
-			System.out.println("b");
-			printUsage();
-			
+			scanQuery.close();
+		} catch (FileNotFoundException e) {
+			printUsage("File not found please insert in the correct directory");
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public static long convertStringToLong(String word) {
-		long finalNumber=0;
-
-				for  (int j = 0; j < word.length(); j++){
-					char geneCode = word.charAt(j);
-					byte conversion = 0;
-					
-					switch(geneCode){
-					case 'a':
-						conversion = A;
-						break;
-					case 'c':
-						conversion = C;
-						break;
-					case 'g':
-						conversion = G;
-						break;
-					case 't':
-						conversion = T;
-						break;
-					default:
-						//not a gene character
-						break;
-					}
-					
-					//offset the finalLong value
-					finalNumber= finalNumber<<2;
-					
-					//append the new char to finalLong
-					finalNumber += conversion;
-				}
-
-			return finalNumber;
-			}
-		
-		
-		/**
-		 * converting a long value into a gene sequence which contains a, c, g, or t
-		 * @param c long to convert
-		 * @param len int of sequence
-		 * @return String representation of code
-		 */
-		public static String backConvert1(long c, int len){
-			StringBuilder backConvert = new StringBuilder("");
-			for(int i = 1; i <= len; i++){
-				long numToConvert = c;
-				numToConvert = numToConvert >> (2*(len-i));
-				
-				switch((int)(numToConvert % 4)){
-				case 0:
-					backConvert.append("a");
-					break;
-				case 1:
-					backConvert.append("c");
-					break;
-				case 2:
-					backConvert.append("g");
-					break;
-				case 3:
-					backConvert.append("t");
-					break;
-				}
-			}
-			return backConvert.toString();	
-		}
-		
+	
 	/**
-	 * Prints usage message for invalid inputs
+	 * Converts current string of DNA to Long
+	 * 
+	 * @return converted string of DNA notation to Long
 	 */
-	private static void printUsage() {
-		System.err.print("Usage: GeneBankSearch <0/1(no/with Cache)> ");
-		System.err.print("<btree file> <query file> [<cache size>] ");
-		System.err.println("[<debug level>");
+private long convert(String subString) {
+	int i = 0;
+	long returnConversion = 1;
+	String[] split = subString.split("");
+	
+	while (i < subString.length()) {
+		returnConversion = returnConversion << 2;
 		
-		System.exit(0);
+		if (split[i].equals("A") || split[i].equals("a"))
+			returnConversion = returnConversion | 0;
+		else if (split[i].equals("T") || split[i].equals("t"))
+			returnConversion = returnConversion | 3;
+		else if (split[i].equals("C") || split[i].equals("c"))
+			returnConversion = returnConversion | 1;
+		else if (split[i].equals("G") || split[i].equals("g"))
+			returnConversion = returnConversion | 2;
+		else 
+			return -1;
+		i++;
+	}
+	return returnConversion;
+}
+
+private void outputFileConstructor() throws IOException {
+	
+	File outputFile = new File(BTreeName + " " + QueryName + " Results");
+	printWriter = new PrintWriter(new FileWriter(outputFile), true);
+}
+
+/**
+ * check the user inputs for the program. Will inform the user if 
+ * the arguments are not correct
+ *
+ * @param args program arguments
+ */
+private void parserOfArguments(String[] args) {
+
+	if (args.length < 3 || args.length > 5)
+		printUsage("Program requires between 3 and 5 valid arguements to run");
+
+	try {
+		if (Integer.parseInt(args[0]) == 1)
+			printUsage("1st argument must be either 0 or 1 ");
+		
+	} catch (IllegalFormatException e) {
+		printUsage("1st argument must be either 0 or 1 ");
+	}
+
+	BTreeName = args[1];
+	
+	beTreeFile = new File(BTreeName);
+
+	QueryName = args[2];
+	
+	queryFileObject = new File(QueryName);
+}
+
+
+	/**
+	 * Converts a binary long value back into its orignal DNA sequence
+	 * 
+	 * @param binaryDNAsequence the long to be decoded back into a String
+	 * @return the decodedStr that was decoded from the long
+	 */
+	public String sequenceDecoder(long binaryDNAsequence) {
+		String stringConversion = "";
+		if (binaryDNAsequence == -1) {
+			
+			stringConversion = stringConversion.concat("n");
+			return stringConversion;
+		}
+		long letter = 0;
+
+		while (binaryDNAsequence != 1) {
+			letter = binaryDNAsequence & 3;
+			binaryDNAsequence = binaryDNAsequence >> 2;
+
+			if (letter == 0)
+				stringConversion = "a" + stringConversion;
+			else if (letter == 3)
+				stringConversion = "t" + stringConversion;
+			else if (letter == 1)
+				stringConversion = "c" + stringConversion;
+			else if (letter == 2)
+				stringConversion = "g" + stringConversion;
+			else
+				stringConversion = "n" + stringConversion;
+		}
+		return stringConversion;
+	}
+
+	/**
+	 * Informs the user at launch what the program requires to run.
+	 * Will also inform the user if the arguments passed are not correct
+	 * 
+	 * @param error reason for crash
+	 */
+	private void printUsage(String error) {
+		
+		System.err.println(error);
+		System.out.println("");
+
+		System.out.println(
+				"<0/1 (no/with Cache)>: 	A 0 declares that there will be no cache, while a 1 declares a cache");
+		System.out.println("			 If a cache is declared, the 4th argument must be a positive integer");
+		System.out.println("<btree file>: 		The binary file where the BTree is stored");
+		System.out.println("<query file>:		The query file to compare the btree file to");
+		System.out.println(
+				"			 The argument must be a positive integer (an integer too big may crash the program");
+		System.out.println(
+				"[<debug level>]: 	(optional) either 0 or 1, will print out different output with different arguments");
+		System.exit(1);
 	}
 }
