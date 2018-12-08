@@ -1,0 +1,83 @@
+****************
+* Project 04/ B-Tree
+* CS 321
+* 12/7/2018
+* Akhilesh Goit
+* Binod Karki
+* Justin Carpenter
+* Spencer Adams
+
+**************** 
+
+OVERVIEW:
+B-Tree project converts the provided Genebank file into a BTree with each object being
+a DNA sequence of user specified lenght.
+
+
+INCLUDED FILES:
+ * GeneBankCreateBTree.java - source file
+ * GeneBankSearch.java - source file
+ * BTree.java - source file
+ * BTreeNode.java - source file
+ * Cache.java - source file
+ * GeneticFileConstructor.java - source file
+ * NodeData.java - source file
+ * Parser.java - source file
+ * README - this file
+
+COMPILING AND RUNNING:
+
+ From the directory containing all source files, compile the
+ driver class (and all dependencies) with the command:
+ $ javac GeneBankCreateBTree.java
+ $ javac GeneBankSearch.java
+ 
+  Run the compiled GeneBankCreateBTree class file with the command:
+ $ java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]
+
+ $ java GeneBankSearch <0/1(no/with Cache)> <bTree file> <query file>[<cache size>] [<debug level>]
+
+ Console output will give the results after the program finishes. 
+ 
+
+PROGRAM DESIGN AND IMPORTANT CONCEPTS:
+
+The B-Tree class is implemented using the Arraylist of NodeData that are stored in B-Tree class and then 
+inserted into a BTreeNode. Contents of the BTree can be printed using the in-order traversal. The BTree class is 
+constructed by passing in degree, sequence length, ans cacheSize variables. The open() method takes in a BTree file 
+in the format of test1.gbk.btree.data.k.t. and creates a BTree with root node. In this class the create method takes 
+the binary files and creates the Btree node. It also uses the cache option if it is provided by the user.
+
+The GeneBankSearch.java class is the main java class of this project which assumes that the user specified the B-Tree 
+to use depending upon the query length. In this class it uses the minimum degree which is used for the B-Tree. The program 
+should choose the user specified degree, like if the user specifies 0, then the program choose the optimum degree based on a 
+disk size of 4096 bytes and the size of the B-Tree node on disk. This class also contains the debug level which is an optional argument 
+with a default value of zero. GeneticFileConstructor.java contains all the important constructor used in this project.
+
+TESTING:
+
+For testing all the class we create for this project, we create a separate test method which test the program and and writing all
+the test method and fixing all the error we run the code using the following code:
+
+ $ java GeneBankCreateBTree <0/1(no/with Cache)> <degree> <gbk file> <sequence length> [<cache size>] [<debug level>]
+
+ $ java GeneBankSearch <0/1(no/with Cache)> <bTree file> <query file>[<cache size>] [<debug level>]
+ 
+In terms of real time, it took about 6.69 seconds to create for test3.gbk with sequence length of 7 and degree of 7. For same configuration cache size 100 
+took about 3.77 seconds, and cache size of 500 took about 1.25 seconds. 
+
+
+DISCUSSION:
+
+For this project we have to create the UML diagram before starting the coding work. One of our teammate creates the UML diagram and 
+shared it team drive and we all looked at it before contacting to the instructor. Instructor figure out some minor issues and he give 
+some suggestion to come the two node class together and add some extra method to some of the classes. After completing UML diagram we all divided 
+the work in a team. And we used to share the issues and also contacting to the tutor about some minor issues like creating the constructor.
+We fix our issues together and finish the project.
+ 
+EXTRA CREDIT:
+
+This project does not have any extra credit.
+
+----------------------------------------------------------------------------
+
