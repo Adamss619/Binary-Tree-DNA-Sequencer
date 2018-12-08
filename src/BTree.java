@@ -93,7 +93,8 @@ public class BTree<T> {
             advanceOffset();
             this.root = newChild;
             readWrite.updateLocationOfRoot(this.root.getOffset());
-            newChild.children[0] = root.getOffset();
+            TreeObject node = new TreeObject(root.getOffset(), this.degree, root.getFrequancy());
+            newChild.setChild(0, node);
             splitChild(newChild, 0, root);
             insertNonFull(newChild, nextSequence);
         } else { // if the root is not full calls inertNonFull
@@ -118,34 +119,37 @@ public class BTree<T> {
         newNode.setSize(degree - 1);
         //go through the node being split and assign half the values to the new node and remove them from the node being split
         for (int j = 0; j <= degree - 2; j++) {
-            newNode.keyArray[j] = splitNode.keyArray[degree + j];
-            newNode.frequency[j] = splitNode.frequency[degree + j];
-            splitNode.keyArray[degree + j] = 0;
-            splitNode.frequency[degree + j] = 0;
+            TreeObject node = new TreeObject(splitNode.getParentValue(degree + j), degree, splitNode.getParentFrequancy(degree + j));
+            newNode.setParent(j, node);
+            splitNode.setParent(i, null);
         }
         // do the same but with the children nodes
         if (!splitNode.getLeaf()) {
             for (int j = 0; j <= degree - 1; j++) {
-                newNode.children[j] = splitNode.children[j + degree];
-                splitNode.children[j + degree] = 0;
+                newNode.setChild(j, splitNode.getChild(j + degree));
+                splitNode.setChild(j + degree, null);
             }
         }
-        newNode.setParent(parent.getOffset()); // set parent
+        for (int j = 0; j < parent.getSize(); j++) {
+            newNode.setParent(j, parent.getParent(j)); // set parent
+
+        }
         splitNode.setSize(degree - 1);
         // move the parents children down to the children of newNode
         for (int j = parent.getSize(); j > i; j--) {
-            parent.children[j + 1] = parent.children[j];
+            parent.setChild(j + 1, parent.getParent(j));
         }
         // move the newNode to the child of parent
-        parent.children[i + 1] = newNode.getOffset();
+        TreeObject node = new TreeObject(newNode.getOffset(), degree, newNode.getFrequancy());
+        parent.setChild(i + 1, node);
         for (int j = parent.getSize(); j > i; j--) {
-            parent.keyArray[j] = parent.keyArray[j - 1];
-            parent.frequency[j] = parent.frequency[j - 1];
+            TreeObject temp = new TreeObject(parent.getParentValue(j - 1), degree, parent.getParentFrequancy(j - 1));
+            parent.setParent(j, temp);
         }
-        parent.keyArray[i] = splitNode.keyArray[degree - 1];
-        parent.frequency[i] = splitNode.frequency[degree - 1];
-        splitNode.keyArray[degree - 1] = 0;
-        splitNode.frequency[degree - 1] = 0;
+        node.setFrequancy(splitNode.getParentFrequancy(degree - 1));
+        node.setData(splitNode.getParentValue(degree - 1));
+        parent.setParent(i, node);
+        splitNode.setParent(degree - 1, null);
         parent.setSize(parent.getSize() + 1);
         writeNode(parent);
         writeNode(splitNode);
@@ -163,57 +167,56 @@ public class BTree<T> {
         int i = node.getSize();
 
         if (node.getLeaf()) {
-            if (i > 0 && nextSequence == node.keyArray[i - 1]) {
-                node.frequency[i - 1]++;
+            if (i > 0 && nextSequence == node.getParentValue(i - 1)) {
+                node.setFrequancy(i - 1);
                 writeNode(node);
                 return;
             }
-            while (i >= 1 && nextSequence <= node.keyArray[i - 1]) {
-                if (nextSequence == node.keyArray[i - 1]) {
-                    node.frequency[i - 1]++;
+            while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
+                if (nextSequence == node.getParentValue(i - 1)) {
+                    node.setFrequancy(i - 1);
                     writeNode(node);
                     return;
                 }
                 i--;
             }
             i = node.getSize();
-            while (i >= 1 && nextSequence < node.keyArray[i - 1]) {
-                node.keyArray[i] = node.keyArray[i - 1];
-                node.frequency[i] = node.frequency[i - 1];
+            while (i >= 1 && nextSequence < node.getParentValue(i - 1)) {
+                node.setParent(i, node.getParent(i - 1));
                 i--;
             }
-            node.keyArray[i] = nextSequence;
-            node.frequency[i] = 1;
+            TreeObject temp = new TreeObject(nextSequence, degree, 1);
+            node.setParent(i, temp);
             node.setSize(node.getSize() + 1);
             writeNode(node);
             return;
         } else {
-            if (i > 0 && nextSequence == node.keyArray[i - 1]) {
-                node.frequency[i - 1]++;
+            if (i > 0 && nextSequence == node.getParentValue(i - 1)) {
+                node.setFrequancy(i - 1);
                 writeNode(node);
                 return;
             }
-            while (i >= 1 && nextSequence <= node.keyArray[i - 1]) {
-                if (nextSequence == node.keyArray[i - 1]) {
-                    node.frequency[i - 1]++;
+            while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
+                if (nextSequence == node.getParentValue(i - 1)) {
+                    node.setFrequancy(i - 1);
                     writeNode(node);
                     return;
                 }
                 i--;
             }
             // Read child in from file or cache that sequence will pass to
-            BTreeNode child = readNode(node.children[i]);
+            BTreeNode child = readNode(node.getChild(i).getData());
             if (child.isFull()) {
                 splitChild(node, (i), child);
-                if (nextSequence == node.keyArray[i]) {
-                    node.frequency[i]++;
+                if (nextSequence == node.getParentValue(i)) {
+                    node.setFrequancy(i);
                     writeNode(node);
                     return;
                 }
                 // compare the values at position i with the new value to find where to insert it
-                if (nextSequence > node.keyArray[i]) {
+                if (nextSequence > node.getParentValue(i)) {
                     i++;
-                    child = readNode(node.children[i]);
+                    child = readNode(node.getChildValue(i));
                 }
             }
             insertNonFull(child, nextSequence);
@@ -235,19 +238,19 @@ public class BTree<T> {
         }
         for (int i = 0; i <= node.getSize(); i++) {
             if (i < (2 * degree) - 1) {
-                if (node.keyArray[i] > 0 || node.children[i] > 0) {
-                    tempNode = readWrite.readData(node.children[i]);
+                if (node.getParentValue(i) > 0 || node.getChildValue(i) > 0) {
+                    tempNode = readWrite.readData(node.getChildValue(i));
                     inOrder(tempNode);
                     if (i < node.getSize()) {
-                        Pwriter.print(node.frequency[i] + "\t\t" + sequenceBuilder(node.keyArray[i]) + "\n");
+                        Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
                         Pwriter.flush();
                     }
                 }
-            } else if (node.children[i] > 0) {
-                tempNode = readWrite.readData(node.children[i]);
+            } else if (node.getChildValue(i) > 0) {
+                tempNode = readWrite.readData(node.getChildValue(i));
                 inOrder(tempNode);
                 if (i < node.getSize()) {
-                    Pwriter.print(node.frequency[i] + "\t\t" + sequenceBuilder(node.keyArray[i]) + "\n");
+                    Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
                     Pwriter.flush();
                 }
             } else {
@@ -263,8 +266,8 @@ public class BTree<T> {
 
     private void writeNodeToGBK(BTreeNode node) {
         for (int i = 0; i < (2 * degree) - 1; i++) {
-            if (node.keyArray[i] > 0) {
-                Pwriter.print(node.frequency[i] + "\t\t" + sequenceBuilder(node.keyArray[i]) + "\n");
+            if (node.getParentValue(i) > 0) {
+                Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
             }
         }
         Pwriter.flush();

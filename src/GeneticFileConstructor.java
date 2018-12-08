@@ -214,13 +214,13 @@ public class GeneticFileConstructor {
         bTreeFileData.writeBoolean(writenNode.getLeaf());
 
         for (int i = 0; i < ((2 * degree) - 1); i++) {
-            bTreeFileData.writeLong(writenNode.keyArray[i]);
+            bTreeFileData.writeLong(writenNode.getOffset());
         }
         for (int i = 0; i < ((2 * degree) - 1); i++) {
-            bTreeFileData.writeLong(writenNode.frequency[i]);
+            bTreeFileData.writeLong(writenNode.getFrequancy());
         }
         for (int i = 0; i < (2 * degree); i++) {
-            bTreeFileData.writeLong(writenNode.children[i]);
+            bTreeFileData.writeLong(writenNode.getChildValue(i));
         }
         bTreeFileData.writeLong(writenNode.getParentOffset());
     }
@@ -240,19 +240,18 @@ public class GeneticFileConstructor {
         returnNode.setLeaf(bTreeFileData.readBoolean());
 
         for (int i = 0; i < ((2 * degree) - 1); i++) {
+            TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
 
-            returnNode.keyArray[i] = bTreeFileData.readLong();
-        }
-        for (int i = 0; i < ((2 * degree) - 1); i++) {
+            returnNode.setParent(i, parentNode);
 
-            returnNode.frequency[i] = bTreeFileData.readLong();
         }
         for (int i = 0; i < (2 * degree); i++) {
+            TreeObject childNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
 
-            returnNode.children[i] = bTreeFileData.readLong();
+            returnNode.setChild(i, childNode);
         }
+        TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
 
-        returnNode.setParent(bTreeFileData.readLong());
         return returnNode;
     }
 

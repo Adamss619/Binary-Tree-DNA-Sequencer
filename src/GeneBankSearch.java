@@ -45,22 +45,22 @@ public class GeneBankSearch {
     private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) throws IOException {
         int x = 0;
 
-        while (x < (beginNode.getSize()) && keyNodeSearch > beginNode.keyArray[x]) {
+        while (x < (beginNode.getSize()) && keyNodeSearch > beginNode.getParentValue(x)) {
 
             x++;
         }
-        if (x < beginNode.getSize() && keyNodeSearch == beginNode.keyArray[x]) {
+        if (x < beginNode.getSize() && keyNodeSearch == beginNode.getParentValue(x)) {
             if (debug == 1) {
 
-                printWriter.println(sequenceDecoder(beginNode.keyArray[x]) + ": " + beginNode.frequency[x]);
+                printWriter.println(sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getFrequancy());
             }
-            return sequenceDecoder(beginNode.keyArray[x]) + ": " + beginNode.frequency[x];
+            return sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getFrequancy();
 
         } else if (beginNode.getLeaf())
 
             return null;
         else {
-            return keyValueNodeSearch(dataReader.readData(beginNode.children[x]), keyNodeSearch);
+            return keyValueNodeSearch(dataReader.readData(beginNode.getChildValue(x)), keyNodeSearch);
         }
     }
 

@@ -1,5 +1,5 @@
 
-public class TreeObject implements Comparable<TreeObject> {
+public class TreeObject {
 
     private int degree;
     private long data;
@@ -7,9 +7,9 @@ public class TreeObject implements Comparable<TreeObject> {
 
 
     public TreeObject(long data, int degree, int frequancy) {
-        this.frequancy = frequancy;
-        this.degree = degree;
         this.data = data;
+        this.degree = degree;
+        this.frequancy = frequancy;
     }
 
     public void increaseFrequancy() {
