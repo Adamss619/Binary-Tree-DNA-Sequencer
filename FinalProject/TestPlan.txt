@@ -1,0 +1,142 @@
+Test Plan
+
+BTreeNode<T>
+These tests ensure that we can recognize a root node from others nodes and that we have the ability to set a node as root when creating a node. These are essential to understanding a tree and how its going to be laid out.
+        -testIsRootTrue()
+        -testIsRootFalse()
+        -testSetRoot()
+These tests ensure that when a node is created that we can set the value of the node and that the value being returned is also correctly behind updated. Needed so we know what is being stored at each node
+        -testSetValue() 
+        -testGetValue()
+        -testSetKey()
+        -testGetKey()
+These tests ensure that we know if a node is a leaf or has children and if we can access those children. Important because it verifies we have the ability to parse through our tree node by node.
+        -testgetLeftNodeTrue()
+        -testgetLeftNodeFalse()
+        -testsetLeftNode()
+        -testgetRightNodeTrue()
+-testgetRightNodeFalse()
+        -testsetRightNode()
+        -testisLeafTrue()
+        -testisLeafFalse()
+Tests to make sure we have an accurate account of tree size and that in all cases where size is behind changed we are keeping track. Important because we don’t want to return invalid information to the user.
+        -testSize()
+        -testSetSize()
+
+
+BTree<T>
+Each test at the top is a scenario in which a BTree could go through. After each scenario the test bellow this upper section will go through a variety of other test to make sure that the scenario was executed correctly. This ensures that the tree handles its operations correctly and only returns correct value when certain processes cannot be executed. 
+-testEmptyTree
+-testEmptyTreeInsertA
+-testEmptyTreeInsertAInsertB
+-testEmptyTreeInsertAInsertBDeleteA
+-testEmptyTreeInsertAInsertBDeleteB
+-testEmptyTreeInsertAInsertBInsertCInsertDSplitChild
+-testADeleteA
+-testATreeInsertB
+-testAInsertBDeleteBDeleteA
+-testATreeInsertBDeleteA
+-testATreeInsertBDeleteB
+-testATreeInsertBDeleteBDeleteAInsertC
+-testATreeInsertBInsertCInsertDSplitChild
+
+
+These test will be ran after each scenario ensuring that the scenario was executed correctly. 
+-testSearchFalse()
+        -testSearchTrue()
+        -testInsertNonFullTrue()
+-testInsertNonFullTrue()
+        -testInsert()
+        -testSplitChild()
+        -testInsertNonFull()
+        -testDeleteTrue()
+        -testDeleteFalse()
+        -testgetRootTrue()
+        -testgetRootFalse()
+        -testContainsTrue()
+        -testContrainsFalse()
+        -testSize()
+
+
+*more scenarios will be added but not needed here for you to understand how testing plan
+
+
+BTreeCache<T>
+
+
+These Tests for BTreeCache<T> class makes sure that all of our methods in this class works as expected, so that BTree will be able to get the required data, write a data to it, and remove as needed. 
+* testEmptyCache -> [ ]
+   * add(A) -> [A]
+   * get(A) -> [A ]
+   * removeLast() -> [ ]
+   * remove(A) -> [ ]
+   * clear() -> [ ]
+* testCacheWithOneElement -> [A]
+   * get(A) - [A]
+   * add(B) -> [A,B]
+   * removeLast() -> [A]
+   * remove(A) -> [ ]
+   * clear() -> [ ]
+* testCacheWithTwoElement -> [A, B]
+   * get(B) -> [B, A]
+   * add(C) -> [B, A, C]
+   * removeLast() -> [B, A]
+   * remove(A) -> [B]
+   * clear() -> [ ]
+
+
+GeneBankCreateBTree
+        These tests are to test values passed into the create GeneBankCreateBTree. These should be done in the class and exit with the correct system out to the terminal.
+* testValidFileName
+* testValidDegree
+* testValidLength
+* testValidDebugLevel
+* testValidCache
+* testValidSequences 
+
+
+
+
+These files are to make sure the correct valid and invalid BTree files are created, with comparing to the correct output files.
+* validFile1
+* validFile2
+* validFile3
+* validFile4
+* validFile5
+* invalidFile1        (invalid sequence lengths)
+* invalidFile2        (invalid sequence lengths)
+* invalidFile3        (invalid sequence values)
+* invalidFile4        (invalid sequence values)
+* invalidFile5        (invalid sequence values)
+The test should call using these files with a comparator to compare the tree created with the correct tree.
+* testValidFile1()
+* testValidFile2()
+* testValidFile3()
+* testValidFile4()
+* testValidFile5()
+* testInValidFile1()
+* testInValidFile2()
+* testInValidFile3()
+* testInValidFile4()
+* testInValidFile5()
+
+
+GeneBankSearch
+        These tests for GeneBankSearch class makes sure that this class search the specified B-tree for sequence of given length. These test will also tests the four possible bases (A,C,G and T) using the 2-bit binary number.
+
+
+* testQueryFile
+* testBTreeFile
+* testQuerySequenceLength
+* testCache
+* testCacheSize
+* testDebugeMode
+* testDebug0
+* testDebugMsg
+* testbTreeSequenceLength
+* testConvertStringToLong
+* testPrintUsage
+* testBakcConvert
+
+
+Test class will also test if the provided B-Tree filename is present or not, if it is there then it will print a message with the provided file name otherwise it will print the error message saying the B -tree file was not found.
