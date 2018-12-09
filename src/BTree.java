@@ -142,26 +142,23 @@ public class BTree<T> {
                 splitNode.setChild(j + degree, null);
             }
         }
-        //   for (int j = 0; j < parent.getSize(); j++) {
-        //     newNode.setParent(j, parent.getParent(j)); // set parent
-        newChild.setParentNode(parent); // set parent node
-        //}
-        splitNode.setSize(degree - 1);
-        // move the parents children down to the children of newNode
+
+        newChild.setParentNode(parent);                                 // set parent node
+        splitNode.setSize(degree - 1);                                  //set splitNode size
+        // move the parents children up one position
         for (int j = parent.getSize(); j > i; j--) {
             parent.setChild(j + 1, parent.getChild(j));
         }
         // move the newNode to the child of parent
-        // TreeObject node = new TreeObject(newChild.getOffset(), newChild.getFrequancy());
-        parent.setChild(i + 1, newChild);
+        parent.setChild(i + 1, newChild);                       //set the position of the new child node to one after i
+        //go through and move the parent nodes parent values up one position
         for (int j = parent.getSize(); j > i; j--) {
-            // TreeObject temp = new TreeObject(parent.getParentValue(j - 1), parent.getParentFrequancy(j - 1));
             parent.setParent(j, parent.getParent(j - 1));
         }
-        parent.setParent(i, splitNode.getParent(i));
-        splitNode.setParent(degree - 1, null);
-        parent.setSize(parent.getSize() + 1);
-        writeNode(parent);
+        parent.setParent(i, splitNode.getParent(i));                //set the parent parent value to the new parent (middle of splitchild)
+        splitNode.setParent(degree - 1, null);          //remove the parent value of splitchild because it is now in parent
+        parent.setSize(parent.getSize() + 1);                       //increase the size of parent by one
+        writeNode(parent);                                          //write to disk
         writeNode(splitNode);
         writeNode(newChild);
     }
