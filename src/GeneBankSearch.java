@@ -40,9 +40,8 @@ public class GeneBankSearch {
      * @param beginNode     - node in which search will begin from
      * @param keyNodeSearch - key value we are searching for
      * @return long value if value is found
-     * @throws IOException
      */
-    private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) throws IOException {
+    private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) {
         int x = 0;
 
         while (x < (beginNode.getSize()) && keyNodeSearch > beginNode.getParentValue(x)) {
@@ -52,15 +51,16 @@ public class GeneBankSearch {
         if (x < beginNode.getSize() && keyNodeSearch == beginNode.getParentValue(x)) {
             if (debug == 1) {
 
-                printWriter.println(sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getFrequancy());
+                printWriter.println(sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getParentFrequancy(x));
             }
-            return sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getFrequancy();
+            return sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getParentFrequancy(x);
 
         } else if (beginNode.getLeaf())
 
             return null;
         else {
-            return keyValueNodeSearch(dataReader.readData(beginNode.getChildValue(x)), keyNodeSearch);
+
+            return keyValueNodeSearch(beginNode.getChild(x), keyNodeSearch);
         }
     }
 

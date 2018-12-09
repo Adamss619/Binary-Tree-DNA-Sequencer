@@ -97,7 +97,7 @@ public class BTree<T> {
             BTreeNode newRoot = new BTreeNode(this.degree);         //create a new node that will be the new parent or root node
             advanceOffset();
             this.root = newRoot;                                    //save the new root to teh btree
-            readWrite.updateLocationOfRoot(this.root.getOffset());
+            readWrite.updateLocationOfRoot(this.root.getParentValue(0));
             //TreeObject node = new TreeObject(root.getOffset(),  root.getFrequancy());
             newRoot.setChild(0, root);                           //set the old root to the child node of the new root
             splitChild(newRoot, 0, root);                        //split the old root into two child nodes of the new root
@@ -209,7 +209,7 @@ public class BTree<T> {
                 }
                 i--;
             }
-            BTreeNode child = readNode(node.getChild(i).getOffset());
+            BTreeNode child = node.getChild(i);
             if (child.isFull()) {
                 splitChild(node, (i), child);
                 if (nextSequence == node.getParentValue(i)) {
@@ -220,7 +220,7 @@ public class BTree<T> {
                 // compare the values at position i with the new value to find where to insert it
                 if (nextSequence > node.getParentValue(i)) {
                     i++;
-                    child = readNode(node.getChildValue(i));
+                    child = node.getChild(i);
                 }
             }
             insertNonFull(child, nextSequence);
@@ -231,9 +231,8 @@ public class BTree<T> {
      * this is a recursion that writes the BTree data to the new file in order
      *
      * @param node
-     * @throws IOException
      */
-    public void inOrder(BTreeNode node) throws IOException {
+    public void inOrder(BTreeNode node) {
         BTreeNode tempNode;
 
         if (node.getLeaf()) {
@@ -242,16 +241,16 @@ public class BTree<T> {
         }
         for (int i = 0; i <= node.getSize(); i++) {
             if (i < (2 * degree) - 1) {
-                if (node.getParentValue(i) > 0 || node.getChildValue(i) > 0) {
-                    tempNode = readWrite.readData(node.getChildValue(i));
+                if (node.getParentValue(i) > 0 || node.getChild(i) != null) {
+                    tempNode = node.getChild(i);
                     inOrder(tempNode);
                     if (i < node.getSize()) {
                         Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
                         Pwriter.flush();
                     }
                 }
-            } else if (node.getChildValue(i) > 0) {
-                tempNode = readWrite.readData(node.getChildValue(i));
+            } else if (node.getChild(i) != null) {
+                tempNode = node.getChild(i);
                 inOrder(tempNode);
                 if (i < node.getSize()) {
                     Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
