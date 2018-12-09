@@ -56,12 +56,11 @@ public class GeneBankSearch {
             return sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getParentFrequancy(x);
 
         } else if (beginNode.getLeaf())
-
             return null;
-        else {
-
+        else if (beginNode.getChild(x) != null) {
             return keyValueNodeSearch(beginNode.getChild(x), keyNodeSearch);
         }
+        return null;
     }
 
     /**

@@ -134,24 +134,10 @@ public class BTreeNode<T> {
         return parent[i];
     }
 
-    /*   public long getChildValue(int i) {
-           return child[i].getOffset();
-       }
-   */
     public long getParentValue(int i) {
         return parent[i].getData();
     }
 
-    /*   public boolean hasChildren() {
-
-           for (int i = 0; i < (2 * degree) - 1; i++) {
-               if (child[i].getOffset() != 0) {
-                   return true;
-               }
-           }
-           return false;
-       }
-   */
     public boolean isFull() {
         return size == (2 * degree) - 1;
     }
