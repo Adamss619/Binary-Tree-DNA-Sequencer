@@ -152,8 +152,8 @@ public class BTree<T> {
         //      newNode.setChild(j + 1, parent.getChild(j));
         // }
         // move the newNode to the child of parent
-        TreeObject node = new TreeObject(newChild.getOffset(), degree, newChild.getFrequancy());
-        parent.setChild(i + 1, node);
+        // TreeObject node = new TreeObject(newChild.getOffset(), newChild.getFrequancy());
+        parent.setChild(i + 1, newChild);
         for (int j = parent.getSize(); j > i; j--) {
             TreeObject temp = new TreeObject(parent.getParentValue(j - 1), degree, parent.getParentFrequancy(j - 1));
             parent.setParent(j, temp);
