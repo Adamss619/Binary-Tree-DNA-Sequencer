@@ -183,7 +183,7 @@ public class BTree<T> {
             }
             while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
                 if (nextSequence == node.getParentValue(i - 1)) {
-                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1));
+                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
                     writeNode(node);
                     return;
                 }
@@ -200,13 +200,13 @@ public class BTree<T> {
             writeNode(node);
         } else {
             if (i > 0 && nextSequence == node.getParentValue(i - 1)) {
-                node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1));
+                node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
                 writeNode(node);
                 return;
             }
             while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
                 if (nextSequence == node.getParentValue(i - 1)) {
-                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1));
+                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
                     writeNode(node);
                     return;
                 }
@@ -216,7 +216,7 @@ public class BTree<T> {
             if (child.isFull()) {
                 splitChild(node, (i), child);
                 if (nextSequence == node.getParentValue(i)) {
-                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1));
+                    node.setParentFrequancy(i, node.getParentFrequancy(i) + 1);
                     writeNode(node);
                     return;
                 }
