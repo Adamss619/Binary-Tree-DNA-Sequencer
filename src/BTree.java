@@ -148,19 +148,17 @@ public class BTree<T> {
         //}
         splitNode.setSize(degree - 1);
         // move the parents children down to the children of newNode
-        //   for (int j = parent.getSize(); j > i; j--) {
-        //      newNode.setChild(j + 1, parent.getChild(j));
-        // }
+        for (int j = parent.getSize(); j > i; j--) {
+            parent.setChild(j + 1, parent.getChild(j));
+        }
         // move the newNode to the child of parent
         // TreeObject node = new TreeObject(newChild.getOffset(), newChild.getFrequancy());
         parent.setChild(i + 1, newChild);
         for (int j = parent.getSize(); j > i; j--) {
-            TreeObject temp = new TreeObject(parent.getParentValue(j - 1), degree, parent.getParentFrequancy(j - 1));
-            parent.setParent(j, temp);
+            // TreeObject temp = new TreeObject(parent.getParentValue(j - 1), parent.getParentFrequancy(j - 1));
+            parent.setParent(j, parent.getParent(j - 1));
         }
-        node.setFrequancy(splitNode.getParentFrequancy(degree - 1));
-        node.setData(splitNode.getParentValue(degree - 1));
-        parent.setParent(i, node);
+        parent.setParent(i, splitNode.getParent(i));
         splitNode.setParent(degree - 1, null);
         parent.setSize(parent.getSize() + 1);
         writeNode(parent);
