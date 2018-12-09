@@ -18,6 +18,7 @@ public class GeneticFileConstructor {
     private int lengthOfSequence;
     final int maximumDataNodeSize = 4096;
     private String bTreeFileName;
+    private TreeObject object;
 
     private boolean writeCheck;
     final int metadata = 16;
@@ -235,22 +236,25 @@ public class GeneticFileConstructor {
     public BTreeNode readMetaData(long nodeOffset) throws IOException {
 
         bTreeFileData.seek(nodeOffset);
-        BTreeNode returnNode = new BTreeNode(degree, bTreeFileData.readLong());
+        BTreeNode returnNode = new BTreeNode(degree);
+        object = new TreeObject(nodeOffset, 1);
+        returnNode.setParent(0, object);
         returnNode.setSize(bTreeFileData.readInt());
         returnNode.setLeaf(bTreeFileData.readBoolean());
 
         for (int i = 0; i < ((2 * degree) - 1); i++) {
-            TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
+            TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), 1);
 
             returnNode.setParent(i, parentNode);
 
         }
         for (int i = 0; i < (2 * degree); i++) {
-            TreeObject childNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
-
-            returnNode.setChild(i, childNode);
+            BTreeNode newNode = new BTreeNode(degree);
+            TreeObject childNode = new TreeObject(bTreeFileData.readLong(), 1);
+            newNode.setParent(0, childNode);
+            returnNode.setChild(i, newNode);
         }
-        TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), degree, 1);
+        TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), 1);
 
         return returnNode;
     }

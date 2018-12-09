@@ -23,6 +23,7 @@ public class BTree<T> {
     private int debugLevel;
     private int nodeSize;
     private long offset;
+    private TreeObject object;
 
 
     /**
@@ -45,7 +46,9 @@ public class BTree<T> {
         size = new FindNodeSize();
         this.nodeSize = size.CalculateSize(this.degree);
         offset = BTREE_METADATA;
-        this.root = new BTreeNode(this.degree, offset);
+        object = new TreeObject(offset, 1);
+        this.root = new BTreeNode<>(this.degree);
+        this.root.setParent(0, object);
         advanceOffset();
         root.setLeaf(true);
         writeNode(root);
@@ -71,7 +74,9 @@ public class BTree<T> {
         size = new FindNodeSize();
         this.nodeSize = size.CalculateSize(this.degree);
         offset = BTREE_METADATA;
-        this.root = new BTreeNode(this.degree, offset);
+        object = new TreeObject(offset, 1);
+        this.root = new BTreeNode<>(this.degree);
+        this.root.setParent(0, object);
         advanceOffset();
         root.setLeaf(true);
         writeNode(root);
@@ -89,22 +94,29 @@ public class BTree<T> {
         BTreeNode root = this.root;
         //check if the root node key array is full, if true call splitChild
         if (root.isFull()) {
-            BTreeNode newChild = new BTreeNode(this.degree, offset);
+            BTreeNode newRoot = new BTreeNode(this.degree);         //create a new node that will be the new parent or root node
             advanceOffset();
-            this.root = newChild;
+            this.root = newRoot;                                    //save the new root to teh btree
             readWrite.updateLocationOfRoot(this.root.getOffset());
-            TreeObject node = new TreeObject(root.getOffset(), this.degree, root.getFrequancy());
-            newChild.setChild(0, node);
-            splitChild(newChild, 0, root);
-            insertNonFull(newChild, nextSequence);
+            //TreeObject node = new TreeObject(root.getOffset(),  root.getFrequancy());
+            newRoot.setChild(0, root);                           //set the old root to the child node of the new root
+            splitChild(newRoot, 0, root);                        //split the old root into two child nodes of the new root
+            insertNonFull(newRoot, nextSequence);                   //now the new root should have space to insert the new sequence
         } else { // if the root is not full calls inertNonFull
-            insertNonFull(root, nextSequence);
+            insertNonFull(root, nextSequence);                      //if there is space in the current nodes (root or children of root)
+            // then insert the new sequence in teh right position
         }
     }
 
     /**
      * splitChild is called when a parent node is full and needs to split in order to make room and move the
-     * root node up a level.
+     * root node up a level. The parameter parent is (if it is the new saved root will be an empty node)
+     * that is the parent node of splitNode (which is the full node). splitNode needs to move the middle object
+     * (middle of splitNodes parent array of objects) up to the parent node (parents parent array of objects)
+     * and then divide into two child nodes with the remaining half of splitNodes objects (values in parent array)
+     * will be set as the newChild nodes' objects(values in parent array). Then the children of splitNode
+     * will be split the same way to keep the objects in the parent array of both the newChild and splitNode together.
+     *
      *
      * @param parent
      * @param i
@@ -113,34 +125,34 @@ public class BTree<T> {
      */
     public void splitChild(BTreeNode parent, int i, BTreeNode splitNode) throws IOException {
         // make a new node with the BTree degree and offset then move the offset up one
-        BTreeNode newNode = new BTreeNode(this.degree, offset);
+        BTreeNode newChild = new BTreeNode(this.degree);                         //create a new node that will contain half of splitNode
         advanceOffset();
-        newNode.setLeaf(splitNode.getLeaf());
-        newNode.setSize(degree - 1);
+        newChild.setLeaf(splitNode.getLeaf());                                  //set the new child node to the same leaf status as splitNode
+        newChild.setSize(degree - 1);                                           //set the new size equal
         //go through the node being split and assign half the values to the new node and remove them from the node being split
         for (int j = 0; j <= degree - 2; j++) {
-            TreeObject node = new TreeObject(splitNode.getParentValue(degree + j), degree, splitNode.getParentFrequancy(degree + j));
-            newNode.setParent(j, node);
-            splitNode.setParent(i, null);
+            TreeObject node = new TreeObject(splitNode.getParentValue(degree + j), splitNode.getParentFrequancy(degree + j));
+            newChild.setParent(j, node);
+            splitNode.setParent(j, null);
         }
         // do the same but with the children nodes
         if (!splitNode.getLeaf()) {
             for (int j = 0; j <= degree - 1; j++) {
-                newNode.setChild(j, splitNode.getChild(j + degree));
+                newChild.setChild(j, splitNode.getChild(j + degree));
                 splitNode.setChild(j + degree, null);
             }
         }
-        for (int j = 0; j < parent.getSize(); j++) {
-            newNode.setParent(j, parent.getParent(j)); // set parent
-
-        }
+        //   for (int j = 0; j < parent.getSize(); j++) {
+        //     newNode.setParent(j, parent.getParent(j)); // set parent
+        newChild.setParentNode(parent); // set parent node
+        //}
         splitNode.setSize(degree - 1);
         // move the parents children down to the children of newNode
-        for (int j = parent.getSize(); j > i; j--) {
-            parent.setChild(j + 1, parent.getParent(j));
-        }
+        //   for (int j = parent.getSize(); j > i; j--) {
+        //      newNode.setChild(j + 1, parent.getChild(j));
+        // }
         // move the newNode to the child of parent
-        TreeObject node = new TreeObject(newNode.getOffset(), degree, newNode.getFrequancy());
+        TreeObject node = new TreeObject(newChild.getOffset(), degree, newChild.getFrequancy());
         parent.setChild(i + 1, node);
         for (int j = parent.getSize(); j > i; j--) {
             TreeObject temp = new TreeObject(parent.getParentValue(j - 1), degree, parent.getParentFrequancy(j - 1));
@@ -153,7 +165,7 @@ public class BTree<T> {
         parent.setSize(parent.getSize() + 1);
         writeNode(parent);
         writeNode(splitNode);
-        writeNode(newNode);
+        writeNode(newChild);
     }
 
     /**

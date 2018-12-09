@@ -3,8 +3,10 @@
  *
  */
 public class BTreeNode<T> {
-    private final TreeObject[] child;
+    private final BTreeNode[] child;
     private final TreeObject[] parent;
+    private int degree;
+    BTreeNode<T> parentNode;
     // protected long[] keyArray;
     // protected long[] children;
     // protected long[] frequency;
@@ -19,12 +21,15 @@ public class BTreeNode<T> {
      * BTreeNode constructor
      *
      * @param degree
-     * @param offset
+     * //@param offset
      */
-    public BTreeNode(int degree, long offset) {
-        object = new TreeObject(offset, degree, 1);
+    public BTreeNode(int degree) {
+        // object = new TreeObject(offset, degree, 1);
         parent = new TreeObject[(2 * degree) - 1];
-        child = new TreeObject[2 * degree];
+        child = new BTreeNode[2 * degree];
+        this.degree = degree;
+        this.parentNode = null;
+        //  parent[0] = object;
         //this.currentOffset = offset;
         // keyArray = new long[(2 * degree) - 1];
         // children = new long[2 * degree];
@@ -37,6 +42,13 @@ public class BTreeNode<T> {
 
     }
 
+    public void setParentNode(BTreeNode parentNode) {
+        this.parentNode = parentNode;
+    }
+
+    public BTreeNode getParentNode() {
+        return parentNode;
+    }
 
     public void setLeaf(Boolean isLeaf) {
         this.isLeaf = isLeaf;
@@ -90,7 +102,7 @@ public class BTreeNode<T> {
         Boolean noKey = false;
         int size = 0;
         int i = 0;
-        while (!noKey && i < ((2 * object.getDegree()) - 1)) {
+        while (!noKey && i < ((2 * degree) - 1)) {
             if (parent[i].getData() > 0) {
                 size++;
                 i++;
@@ -110,11 +122,11 @@ public class BTreeNode<T> {
         parent[i] = parentNode;
     }
 
-    public void setChild(int i, TreeObject childOffset) {
+    public void setChild(int i, BTreeNode childOffset) {
         child[i] = childOffset;
     }
 
-    public TreeObject getChild(int i) {
+    public BTreeNode getChild(int i) {
         return child[i];
     }
 
@@ -123,7 +135,7 @@ public class BTreeNode<T> {
     }
 
     public long getChildValue(int i) {
-        return child[i].getData();
+        return child[i].getOffset();
     }
 
     public long getParentValue(int i) {
@@ -132,8 +144,8 @@ public class BTreeNode<T> {
 
     public boolean hasChildren() {
 
-        for (int i = 0; i < (2 * object.getDegree()) - 1; i++) {
-            if (child[i].getData() != 0) {
+        for (int i = 0; i < (2 * degree) - 1; i++) {
+            if (child[i].getOffset() != 0) {
                 return true;
             }
         }
@@ -141,7 +153,7 @@ public class BTreeNode<T> {
     }
 
     public boolean isFull() {
-        return size == (2 * object.getDegree()) - 1;
+        return size == (2 * degree) - 1;
     }
 
     public boolean isEmpty() {
@@ -156,7 +168,7 @@ public class BTreeNode<T> {
         return object.getData() == offset;
     }
 
-    public String toString() {
+  /*  public String toString() {
 
         String retVal = "Node from memory \n";
         retVal += "NodeOffset: " + object.getData() + "\n";
@@ -184,6 +196,6 @@ public class BTreeNode<T> {
         retVal += parentOffset;
         return retVal;
 
-    }
+    }*/
 
 }

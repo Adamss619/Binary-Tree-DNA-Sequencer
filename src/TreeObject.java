@@ -1,14 +1,14 @@
 
 public class TreeObject {
 
-    private int degree;
+    //   private int degree;
     private long data;
     private int frequancy;
 
 
-    public TreeObject(long data, int degree, int frequancy) {
+    public TreeObject(long data, int frequancy) {
         this.data = data;
-        this.degree = degree;
+        // this.degree = degree;
         this.frequancy = frequancy;
     }
 
@@ -16,14 +16,14 @@ public class TreeObject {
         frequancy++;
     }
 
-    public int getDegree() {
-        return degree;
-    }
+    /*   public int getDegree() {
+           return degree;
+       }
 
-    public void setDegree(int degree) {
-        this.degree = degree;
-    }
-
+       public void setDegree(int degree) {
+           this.degree = degree;
+       }
+   */
     public int getFrequancy() {
         return frequancy;
     }
@@ -50,6 +50,6 @@ public class TreeObject {
     }
 
     public String toString() {
-        return "Key: " + data + "Frequency: " + degree;
+        return "Key: " + data + "Frequency: " + frequancy;
     }
 }
