@@ -15,7 +15,7 @@ public class BTreeNode<T> {
     private boolean isLeaf;
     private int size;
     // private int degree;
-    private TreeObject object;
+    //   private TreeObject object;
 
     /**
      * BTreeNode constructor
@@ -58,22 +58,22 @@ public class BTreeNode<T> {
         return this.size;
     }
 
-    public long getOffset() {
-        return object.getData();
-    }
+    //   public long getOffset() {
+    //       return object.getData();
+    //   }
 
-    public int getFrequancy() {
-        return object.getFrequancy();
-    }
+    //   public int getFrequancy() {
+    //       return object.getFrequancy();
+    //   }
 
     public int getParentFrequancy(int i) {
         return parent[i].getFrequancy();
     }
 
-    public int getChildFrequancy(int i) {
-        return child[i].getFrequancy();
-    }
-
+    /*  public int getChildFrequancy(int i) {
+          return child[i]..getFrequancy();
+      }
+  */
     public void setFrequancy(int i) {
         parent[i].increaseFrequancy();
     }
@@ -86,10 +86,10 @@ public class BTreeNode<T> {
         child[i].setFrequancy(freq);
     }
 
-    public long getParentOffset() {
-        return parentOffset;
-    }
-
+    /*   public long getParentOffset() {
+           return parentOffset;
+       }
+   */
     public Boolean getLeaf() {
         return isLeaf;
     }
@@ -134,24 +134,24 @@ public class BTreeNode<T> {
         return parent[i];
     }
 
-    public long getChildValue(int i) {
-        return child[i].getOffset();
-    }
-
+    /*   public long getChildValue(int i) {
+           return child[i].getOffset();
+       }
+   */
     public long getParentValue(int i) {
         return parent[i].getData();
     }
 
-    public boolean hasChildren() {
+    /*   public boolean hasChildren() {
 
-        for (int i = 0; i < (2 * degree) - 1; i++) {
-            if (child[i].getOffset() != 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
+           for (int i = 0; i < (2 * degree) - 1; i++) {
+               if (child[i].getOffset() != 0) {
+                   return true;
+               }
+           }
+           return false;
+       }
+   */
     public boolean isFull() {
         return size == (2 * degree) - 1;
     }
@@ -160,13 +160,13 @@ public class BTreeNode<T> {
         return size == 0;
     }
 
-    public boolean equals(BTreeNode node) {
-        return object.getData() == node.getOffset();
-    }
+    // public boolean equals(BTreeNode node) {
+    //     return object.getData() == node.getOffset();
+    // }
 
-    public boolean equalsOffset(long offset) {
-        return object.getData() == offset;
-    }
+    //  public boolean equalsOffset(long offset) {
+    //     return object.getData() == offset;
+    // }
 
   /*  public String toString() {
 

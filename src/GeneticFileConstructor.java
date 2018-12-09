@@ -206,24 +206,26 @@ public class GeneticFileConstructor {
 
         BTreeNode writenNode = node;
 
-        bTreeFileData.seek(writenNode.getOffset());
+        //  bTreeFileData.seek(writenNode.getOffset());
 
-        bTreeFileData.writeLong(writenNode.getOffset());
+        // bTreeFileData.writeLong(writenNode.getOffset());
 
-        bTreeFileData.writeInt(writenNode.getSize());
+        //bTreeFileData.writeInt(writenNode.getSize());
 
-        bTreeFileData.writeBoolean(writenNode.getLeaf());
+        //bTreeFileData.writeBoolean(writenNode.getLeaf());
 
-        for (int i = 0; i < ((2 * degree) - 1); i++) {
-            bTreeFileData.writeLong(writenNode.getOffset());
+        for (int i = 0; i < writenNode.getSize(); i++) {
+            bTreeFileData.writeLong(writenNode.getParentValue(i));
         }
-        for (int i = 0; i < ((2 * degree) - 1); i++) {
-            bTreeFileData.writeLong(writenNode.getFrequancy());
+        for (int i = 0; i < writenNode.getSize(); i++) {
+            bTreeFileData.writeLong(writenNode.getParentFrequancy(i));
         }
-        for (int i = 0; i < (2 * degree); i++) {
-            bTreeFileData.writeLong(writenNode.getChildValue(i));
+        for (int i = 0; i < writenNode.getSize() + 1; i++) {
+            if (writenNode.getChild(i) != null)
+                writeMetaDataToFile(writenNode.getChild(i));
+            //  bTreeFileData.writeLong(writenNode.getChild(i));
         }
-        bTreeFileData.writeLong(writenNode.getParentOffset());
+        //  bTreeFileData.writeLong(writenNode.parentNode.getParentOffset());
     }
 
     /**
