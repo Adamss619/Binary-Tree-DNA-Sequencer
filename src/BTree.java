@@ -97,11 +97,11 @@ public class BTree<T> {
             BTreeNode newRoot = new BTreeNode(this.degree);         //create a new node that will be the new parent or root node
             advanceOffset();
             this.root = newRoot;                                    //save the new root to teh btree
-            readWrite.updateLocationOfRoot(this.root.getParentValue(0));
             //TreeObject node = new TreeObject(root.getOffset(),  root.getFrequancy());
             newRoot.setChild(0, root);                           //set the old root to the child node of the new root
             splitChild(newRoot, 0, root);                        //split the old root into two child nodes of the new root
             insertNonFull(newRoot, nextSequence);                   //now the new root should have space to insert the new sequence
+            readWrite.updateLocationOfRoot(this.root.getParentValue(0));
         } else { // if the root is not full calls inertNonFull
             insertNonFull(root, nextSequence);                      //if there is space in the current nodes (root or children of root)
             // then insert the new sequence in teh right position
@@ -155,7 +155,7 @@ public class BTree<T> {
         for (int j = parent.getSize(); j > i; j--) {
             parent.setParent(j, parent.getParent(j - 1));
         }
-        parent.setParent(i, splitNode.getParent(i));                //set the parent parent value to the new parent (middle of splitchild)
+        parent.setParent(i, splitNode.getParent(degree - 1));                //set the parent parent value to the new parent (middle of splitchild)
         splitNode.setParent(degree - 1, null);          //remove the parent value of splitchild because it is now in parent
         parent.setSize(parent.getSize() + 1);                       //increase the size of parent by one
         writeNode(parent);                                          //write to disk
