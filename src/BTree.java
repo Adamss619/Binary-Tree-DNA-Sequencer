@@ -8,7 +8,7 @@ import java.io.PrintWriter;
  * BTree class is the ADT of a B-Tree
  *
  * @param <T>
- * @author justin, spencer, binod, alkinish                 //fix the butchered one name
+ * @author justin, spencer, binod, akhilesh                 //fix the butchered one name
  */
 public class BTree<T> {
 
