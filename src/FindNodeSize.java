@@ -11,7 +11,7 @@ public class FindNodeSize {
     final int DEFAULT_DATA = 25;
     final int DEFAULT_SIZE = 8; // 8(2t-1)
     final int DEFAULT_PARENT_OFFSET = 8;
-    final int DEFAULT_CHILD_OFFSET = 8; // 8(2t)
+    final int DEFAULT_CHILD_OFFSET = 30; // 8(2t)
     final int DEFAULT_FREQUENCY = 8; // 8(2t-1)
 
     // Default constructor

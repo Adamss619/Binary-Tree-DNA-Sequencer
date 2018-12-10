@@ -6,6 +6,7 @@ public class TreeObject {
     private int frequancy;
 
 
+
     public TreeObject(long data, int frequancy) {
         this.data = data;
         // this.degree = degree;
@@ -13,7 +14,7 @@ public class TreeObject {
     }
 
     public void increaseFrequancy() {
-        frequancy++;
+        this.frequancy = this.frequancy + 1;
     }
 
     /*   public int getDegree() {
@@ -25,7 +26,7 @@ public class TreeObject {
        }
    */
     public int getFrequancy() {
-        return frequancy;
+        return this.frequancy;
     }
 
     public void setFrequancy(int frequancy) {

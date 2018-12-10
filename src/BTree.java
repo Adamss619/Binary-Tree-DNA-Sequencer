@@ -2,6 +2,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.RandomAccessFile;
 
 
 /**
@@ -15,7 +16,7 @@ public class BTree<T> {
     private BTreeNode<T> root;
     private FindNodeSize size;
     private GeneticFileConstructor readWrite;
-    private PrintWriter Pwriter;
+    private PrintWriter writer;
     private final long BTREE_METADATA = 16;
     private String fileName;
     private int degree;
@@ -24,6 +25,8 @@ public class BTree<T> {
     private int nodeSize;
     private long offset;
     private TreeObject object;
+    private BTreeCache cache;
+    private RandomAccessFile RAF;
 
 
     /**
@@ -46,9 +49,10 @@ public class BTree<T> {
         size = new FindNodeSize();
         this.nodeSize = size.CalculateSize(this.degree);
         offset = BTREE_METADATA;
-        object = new TreeObject(offset, 1);
+        // object = new TreeObject(offset, 1);
         this.root = new BTreeNode<>(this.degree);
-        this.root.setParent(0, object);
+        this.root.setOffSet(offset);
+        // this.root.setParent(0, object);
         advanceOffset();
         root.setLeaf(true);
         writeNode(root);
@@ -74,9 +78,10 @@ public class BTree<T> {
         size = new FindNodeSize();
         this.nodeSize = size.CalculateSize(this.degree);
         offset = BTREE_METADATA;
-        object = new TreeObject(offset, 1);
+        // object = new TreeObject(offset, 1);
         this.root = new BTreeNode<>(this.degree);
-        this.root.setParent(0, object);
+        this.root.setOffSet(offset);
+        //    this.root.setParent(0, object);
         advanceOffset();
         root.setLeaf(true);
         writeNode(root);
@@ -95,13 +100,16 @@ public class BTree<T> {
         //check if the root node key array is full, if true call splitChild
         if (root.isFull()) {
             BTreeNode newRoot = new BTreeNode(this.degree);         //create a new node that will be the new parent or root node
+            newRoot.setOffSet(offset);
             advanceOffset();
             this.root = newRoot;                                    //save the new root to teh btree
             //TreeObject node = new TreeObject(root.getOffset(),  root.getFrequancy());
             newRoot.setChild(0, root);                           //set the old root to the child node of the new root
+            newRoot.getChild(0).setOffSet(root.getOffSet());
+            root.setParentNode(newRoot);
             splitChild(newRoot, 0, root);                        //split the old root into two child nodes of the new root
             insertNonFull(newRoot, nextSequence);                   //now the new root should have space to insert the new sequence
-            readWrite.updateLocationOfRoot(this.root.getParentValue(0));
+            readWrite.updateLocationOfRoot(newRoot.getOffSet());
         } else { // if the root is not full calls inertNonFull
             insertNonFull(root, nextSequence);                      //if there is space in the current nodes (root or children of root)
             // then insert the new sequence in teh right position
@@ -126,12 +134,14 @@ public class BTree<T> {
     public void splitChild(BTreeNode parent, int i, BTreeNode splitNode) throws IOException {
         // make a new node with the BTree degree and offset then move the offset up one
         BTreeNode newChild = new BTreeNode(this.degree);                         //create a new node that will contain half of splitNode
+        newChild.setOffSet(splitNode.getOffSet());
+        splitNode.setOffSet(offset);
         advanceOffset();
         newChild.setLeaf(splitNode.getLeaf());                                  //set the new child node to the same leaf status as splitNode
         newChild.setSize(degree - 1);                                           //set the new size equal
         //go through the node being split and assign half the values to the new node and remove them from the node being split
         for (int j = 0; j <= degree - 2; j++) {
-            TreeObject node = new TreeObject(splitNode.getParentValue(degree + j), splitNode.getParentFrequancy(degree + j));
+            TreeObject node = new TreeObject(splitNode.getParentValue(j), splitNode.getParentFrequancy(j));
             newChild.setParent(j, node);
             splitNode.setParent(j, null);
         }
@@ -142,15 +152,18 @@ public class BTree<T> {
                 splitNode.setChild(j + degree, null);
             }
         }
-
+        splitNode.setParentNode(parent);                                 // set parent node
         newChild.setParentNode(parent);                                 // set parent node
+        newChild.setParentOffset(parent.getOffSet());                                 // set parent node
+        splitNode.setParentOffset(parent.getOffSet());
         splitNode.setSize(degree - 1);                                  //set splitNode size
         // move the parents children up one position
-        for (int j = parent.getSize(); j > i; j--) {
+        for (int j = parent.getSize(); j >= i; j--) {
             parent.setChild(j + 1, parent.getChild(j));
         }
         // move the newNode to the child of parent
-        parent.setChild(i + 1, newChild);                       //set the position of the new child node to one after i
+        parent.setChild(i, newChild);                       //set the position of the new child node to one after i
+
         //go through and move the parent nodes parent values up one position
         for (int j = parent.getSize(); j > i; j--) {
             parent.setParent(j, parent.getParent(j - 1));
@@ -159,6 +172,7 @@ public class BTree<T> {
         splitNode.setParent(degree - 1, null);          //remove the parent value of splitchild because it is now in parent
         for (int j = 0; j < splitNode.getSize(); j++) {
             splitNode.setParent(j, splitNode.getParent(degree + j));
+            splitNode.setParent(degree + j, null);          //remove the parent value of splitchild because it is now in parent
         }
         parent.setSize(parent.getSize() + 1);                       //increase the size of parent by one
         writeNode(parent);                                          //write to disk
@@ -177,13 +191,13 @@ public class BTree<T> {
         int i = node.getSize();
         if (node.getLeaf()) {
             if (i > 0 && nextSequence == node.getParentValue(i - 1)) {
-                node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
+                node.incrementParentFrequancy(i - 1);
                 writeNode(node);
                 return;
             }
             while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
                 if (nextSequence == node.getParentValue(i - 1)) {
-                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
+                    node.incrementParentFrequancy(i - 1);
                     writeNode(node);
                     return;
                 }
@@ -199,24 +213,23 @@ public class BTree<T> {
             node.setSize(node.getSize() + 1);
             writeNode(node);
         } else {
-            if (i > 0 && nextSequence == node.getParentValue(i - 1)) {
-                node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
-                writeNode(node);
-                return;
-            }
+
             while (i >= 1 && nextSequence <= node.getParentValue(i - 1)) {
                 if (nextSequence == node.getParentValue(i - 1)) {
-                    node.setParentFrequancy(i - 1, node.getParentFrequancy(i - 1) + 1);
+                    node.incrementParentFrequancy(i - 1);
                     writeNode(node);
                     return;
                 }
                 i--;
             }
             BTreeNode child = node.getChild(i);
+            if (child == null)
+                System.out.print("hi");
+            //   BTreeNode Rchild = node.getChild(i+1);
             if (child.isFull()) {
                 splitChild(node, (i), child);
                 if (nextSequence == node.getParentValue(i)) {
-                    node.setParentFrequancy(i, node.getParentFrequancy(i) + 1);
+                    node.incrementParentFrequancy(i);
                     writeNode(node);
                     return;
                 }
@@ -230,53 +243,40 @@ public class BTree<T> {
         }
     }
 
-    /**
-     * this is a recursion that writes the BTree data to the new file in order
-     *
-     * @param node
-     */
     public void inOrder(BTreeNode node) {
-        BTreeNode tempNode;
-
         if (node.getLeaf()) {
-            writeNodeToGBK(node);
+            writeNodeToDump(node);
             return;
         }
         for (int i = 0; i <= node.getSize(); i++) {
-            if (i < (2 * degree) - 1) {
-                if (node.getParentValue(i) > 0 || node.getChild(i) != null) {
-                    tempNode = node.getChild(i);
-                    inOrder(tempNode);
-                    if (i < node.getSize()) {
-                        Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
-                        Pwriter.flush();
+            if (i < node.getSize()) {
+                if (node.getParentValue(i) > 0) {
+                    if (node.getChild(i) != null) {
+                        inOrder(node.getChild(i));
                     }
+                    writer.print(node.getParentFrequancy(i) + "\t\t" + decoder(node.getParentValue(i)) + "\n");
+                    writer.flush();
                 }
             } else if (node.getChild(i) != null) {
-                tempNode = node.getChild(i);
-                inOrder(tempNode);
-                if (i < node.getSize()) {
-                    Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
-                    Pwriter.flush();
-                }
+                inOrder(node.getChild(i));
             } else {
                 return;
             }
         }
     }
 
-    private void createGBKFile() throws IOException {
-        File GBKFile = new File(fileName + ".btree.data." + sequenceLength + "." + degree);
-        Pwriter = new PrintWriter(new FileWriter(GBKFile), true);
+    private void createDumpFile() throws IOException {
+        File dumpFile = new File("dump");
+        writer = new PrintWriter(new FileWriter(dumpFile), false);
     }
 
-    private void writeNodeToGBK(BTreeNode node) {
-        for (int i = 0; i < (2 * degree) - 1; i++) {
+    private void writeNodeToDump(BTreeNode node) {
+        for (int i = 0; i < node.getSize(); i++) {
             if (node.getParentValue(i) > 0) {
-                Pwriter.print(node.getParentFrequancy(i) + "\t\t" + sequenceBuilder(node.getParentValue(i)) + "\n");
+                writer.print(node.getParentFrequancy(i) + "\t\t" + decoder(node.getParentValue(i)) + "\n");
             }
         }
-        Pwriter.flush();
+        writer.flush();
     }
 
     private void advanceOffset() {
@@ -297,15 +297,15 @@ public class BTree<T> {
         //readWrite.writeCache();
         System.out.println("A B-Tree file (" + readWrite.getFileName() + ") has been created.");
         if (debugLevel == 1) {
-            System.out.println("Generating GBK file...");
-            createGBKFile();
+            System.out.println("Generating dump file...");
+            createDumpFile();
             inOrder(root);
-            System.out.println("A debug file (" + fileName + ".btree.data." + sequenceLength + "." + degree + ") has been created.");
-            Pwriter.close();
+            System.out.println("A debug file (dump) has been created.");
+            writer.close();
         }
     }
 
-    public String sequenceBuilder(long sequence) {
+    public String decoder(long sequence) {
         String str = "";
         if (sequence == -1) {
             str = str.concat("n");

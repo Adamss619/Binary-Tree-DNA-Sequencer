@@ -1,89 +1,84 @@
 
 import java.io.FileNotFoundException;
+import java.util.Scanner;
+import java.io.PrintWriter;
 import java.io.File;
 import java.util.IllegalFormatException;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
-import java.io.PrintWriter;
 
 /**
- * parses through a B-Tree for specific query files. If found program
- * will print the DNA sequence. Will inform you if file cannot be found in directory.
+ * This program will search a B Tree for strings of a query file. If the program
+ * finds the code then it will print the human genome, if it does not find the
+ * code it will print a statement that says that the file must exist in the same
+ * directory.
  *
- * @author Spencer, Justin, Binod, Akhilesh
+ * @author Kris Veruari
  */
 
 public class GeneBankSearch {
-
+    private File bTree, query;
+    private GeneticFileConstructor dataReader;
     private int degree, debug;
-
     private String BTreeName, QueryName;
     private PrintWriter printWriter;
 
-    private File beTreeFile, queryFileObject;
-    private GeneticFileConstructor dataReader;
-
     public GeneBankSearch(String[] args) {
-        parserOfArguments(args);
-        findAndStore();
+        parseArguments(args);
+        searchAndPrint();
     }
 
     public static void main(String[] args) {
         new GeneBankSearch(args);
     }
 
-
     /**
-     * search through b-tree for a specific key value
+     * This method will check the arguments passed for an invalid input and
+     * assigns the arguments to global variables
      *
-     * @param beginNode     - node in which search will begin from
-     * @param keyNodeSearch - key value we are searching for
-     * @return long value if value is found
+     * @param args
+     *            arguments passed into the program
      */
-    private String keyValueNodeSearch(BTreeNode beginNode, long keyNodeSearch) {
-        int x = 0;
+    private void parseArguments(String[] args) {
 
-        while (x < (beginNode.getSize()) && keyNodeSearch > beginNode.getParentValue(x)) {
+        if (args.length < 3 || args.length > 5)
+            printUsage("Program requires between 3 and 5 valid arguements to run");
 
-            x++;
+        try {
+            if (Integer.parseInt(args[0]) == 1)
+                this.debug = 1;
+            else if (Integer.parseInt(args[0]) == 0)
+                this.debug = 0;
+        } catch (IllegalFormatException e) {
+            printUsage("1st argument must be either 0 or 1 ");
         }
-        if (x < beginNode.getSize() && keyNodeSearch == beginNode.getParentValue(x)) {
-            if (debug == 1) {
 
-                printWriter.println(sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getParentFrequancy(x));
-            }
-            return sequenceDecoder(beginNode.getParentValue(x)) + ": " + beginNode.getParentFrequancy(x);
+        BTreeName = args[1];
+        bTree = new File(BTreeName);
 
-        } else if (beginNode.getLeaf())
-            return null;
-        else if (beginNode.getChild(x) != null) {
-            return keyValueNodeSearch(beginNode.getChild(x), keyNodeSearch);
-        }
-        return null;
+        QueryName = args[2];
+        query = new File(QueryName);
     }
 
     /**
-     * parser of data and will print value if found.
-     * Will inform user if data is not supplied correctly
+     * This method searches the B Tree for the next line of the text file query
+     * and then will print the human genome if found. If not found an error
+     * statement will display.
      */
-    private void findAndStore() {
+    private void searchAndPrint() {
         try {
-            long keyValue = 0;
-            String DNA;
+            long key = 0;
+            String humanGenome;
 
-            Scanner scanQuery = new Scanner(queryFileObject);
-            dataReader = new GeneticFileConstructor(beTreeFile);
-
+            Scanner scanQuery = new Scanner(query);
+            dataReader = new GeneticFileConstructor(bTree);
             if (debug == 1) {
-                outputFileConstructor();
+                createOutputFile();
             }
             long rootLocation = dataReader.rootFinder();
             int sequenceLength = dataReader.getLengthOfSequence();
-
             this.degree = dataReader.getDegree();
             dataReader.setDegree(degree);
-
             while (scanQuery.hasNextLine()) {
                 String geneticSequence = scanQuery.nextLine();
 
@@ -91,128 +86,123 @@ public class GeneBankSearch {
                     throw new IOException();
                 }
 
-                keyValue = convert(geneticSequence);
-                DNA = keyValueNodeSearch(dataReader.readData(rootLocation), keyValue);
-                if (DNA != null)
+                key = makeBinary(geneticSequence);
+                humanGenome = bTreeSearch(dataReader.readData(rootLocation), key);
+                if (humanGenome != null)
 
-                    System.out.println(DNA);
+                    System.out.println(humanGenome);
             }
             if (debug == 1) {
-                System.out.println("The Results File (" + BTreeName + " " + QueryName + " ) has been created.");
+                System.out.println("An output file (" + BTreeName + " " + QueryName + " Results) has been created.");
             }
             scanQuery.close();
         } catch (FileNotFoundException e) {
-            printUsage("File not found please insert in the correct directory");
+            printUsage("The query and BTree file must exist within the same directory");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * This will search the BTree with a starting node for key value
+     *
+     * @param startNode,
+     *            node to start search from
+     * @param keySearch,
+     *            the key to search for
+     * @return the long if the key is found else
+     */
+    private String bTreeSearch(BTreeNode startNode, long keySearch) {
+        int i = startNode.getSize();
+        while (i > 0 && keySearch <= startNode.getParentValue(i - 1)) {
+            if (keySearch == startNode.getParentValue(i - 1)) {
+                if (debug == 1) {
+                    printWriter.println(decoder(startNode.getParentValue(i - 1)) + ": " + startNode.getParentFrequancy(i - 1));
+                }
+                return decoder(startNode.getParentValue(i - 1)) + ": " + startNode.getParentFrequancy(i - 1);
+            }
+            i--;
+        }
+        if (startNode.getChild(i) != null) {
+            return bTreeSearch(startNode.getChild(i), keySearch);
+        }
+        return null;
+    }
 
     /**
-     * Converts current string of DNA to Long
+     * This will convert the variable subString into a long containing the bit
+     * representation of the human genome
      *
-     * @return converted string of DNA notation to Long
+     * @return the long from the inputStr, or -1 if there are invalid characters
      */
-    private long convert(String subString) {
-        int i = 0;
-        long returnConversion = 1;
-        String[] split = subString.split("");
+    private long makeBinary(String inputStr) {
 
-        while (i < subString.length()) {
-            returnConversion = returnConversion << 2;
+        int i = 0;
+        long retval = 1;
+        String[] split = inputStr.split("");
+
+        while (i < inputStr.length()) {
+            retval = retval << 2;
 
             if (split[i].equals("A") || split[i].equals("a"))
-                returnConversion = returnConversion | 0;
+                retval = retval | 0;
             else if (split[i].equals("T") || split[i].equals("t"))
-                returnConversion = returnConversion | 3;
+                retval = retval | 3;
             else if (split[i].equals("C") || split[i].equals("c"))
-                returnConversion = returnConversion | 1;
+                retval = retval | 1;
             else if (split[i].equals("G") || split[i].equals("g"))
-                returnConversion = returnConversion | 2;
+                retval = retval | 2;
             else
                 return -1;
             i++;
         }
-        return returnConversion;
-    }
 
-    private void outputFileConstructor() throws IOException {
-
-        File outputFile = new File(BTreeName + " " + QueryName + " Results");
-        printWriter = new PrintWriter(new FileWriter(outputFile), true);
+        return retval;
     }
 
     /**
-     * check the user inputs for the program. Will inform the user if
-     * the arguments are not correct
+     * This will decode a long back into its original human genome and returns
+     * it as a String
      *
-     * @param args program arguments
-     */
-    private void parserOfArguments(String[] args) {
-
-        if (args.length < 3 || args.length > 5)
-            printUsage("Program requires between 3 and 5 valid arguements to run");
-
-        try {
-            if (Integer.parseInt(args[0]) == 1)
-                printUsage("1st argument must be either 0 or 1 ");
-
-        } catch (IllegalFormatException e) {
-            printUsage("1st argument must be either 0 or 1 ");
-        }
-
-        BTreeName = args[1];
-
-        beTreeFile = new File(BTreeName);
-
-        QueryName = args[2];
-
-        queryFileObject = new File(QueryName);
-    }
-
-
-    /**
-     * Converts a binary long value back into its orignal DNA sequence
-     *
-     * @param binaryDNAsequence the long to be decoded back into a String
+     * @param genomeSequence,
+     *            the long to be decoded back into a String
      * @return the decodedStr that was decoded from the long
      */
-    public String sequenceDecoder(long binaryDNAsequence) {
-        String stringConversion = "";
-        if (binaryDNAsequence == -1) {
-
-            stringConversion = stringConversion.concat("n");
-            return stringConversion;
+    public String decoder(long genomeSequence) {
+        String decodedStr = "";
+        if (genomeSequence == -1) {
+            decodedStr = decodedStr.concat("n");
+            return decodedStr;
         }
         long letter = 0;
 
-        while (binaryDNAsequence != 1) {
-            letter = binaryDNAsequence & 3;
-            binaryDNAsequence = binaryDNAsequence >> 2;
+        while (genomeSequence != 1) {
+            letter = genomeSequence & 3;
+            genomeSequence = genomeSequence >> 2;
 
             if (letter == 0)
-                stringConversion = "a" + stringConversion;
+                decodedStr = "a" + decodedStr;
             else if (letter == 3)
-                stringConversion = "t" + stringConversion;
+                decodedStr = "t" + decodedStr;
             else if (letter == 1)
-                stringConversion = "c" + stringConversion;
+                decodedStr = "c" + decodedStr;
             else if (letter == 2)
-                stringConversion = "g" + stringConversion;
+                decodedStr = "g" + decodedStr;
             else
-                stringConversion = "n" + stringConversion;
+                decodedStr = "n" + decodedStr;
         }
-        return stringConversion;
+
+        return decodedStr;
     }
 
     /**
-     * Informs the user at launch what the program requires to run.
-     * Will also inform the user if the arguments passed are not correct
+     * This will print what the program will execute at launch and/or the error
+     * statement that caused the program not to execute
      *
-     * @param error reason for crash
+     * @param error,
+     *            the error that caused the crash
      */
     private void printUsage(String error) {
-
         System.err.println(error);
         System.out.println();
 
@@ -226,5 +216,10 @@ public class GeneBankSearch {
         System.out.println(
                 "[<debug level>]: 	(optional) either 0 or 1, will print out different output with different arguments");
         System.exit(1);
+    }
+
+    private void createOutputFile() throws IOException {
+        File outputFile = new File(BTreeName + " " + QueryName + " Results");
+        printWriter = new PrintWriter(new FileWriter(outputFile), true);
     }
 }

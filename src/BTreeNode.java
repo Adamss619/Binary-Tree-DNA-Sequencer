@@ -7,6 +7,8 @@ public class BTreeNode<T> {
     private final TreeObject[] parent;
     private int degree;
     BTreeNode<T> parentNode;
+    private int childrenCount;
+    private int parentCount;
     // protected long[] keyArray;
     // protected long[] children;
     // protected long[] frequency;
@@ -16,6 +18,7 @@ public class BTreeNode<T> {
     private int size;
     // private int degree;
     //   private TreeObject object;
+    private long offSet;
 
     /**
      * BTreeNode constructor
@@ -24,22 +27,28 @@ public class BTreeNode<T> {
      * //@param offset
      */
     public BTreeNode(int degree) {
-        // object = new TreeObject(offset, degree, 1);
         parent = new TreeObject[(2 * degree) - 1];
         child = new BTreeNode[2 * degree];
         this.degree = degree;
         this.parentNode = null;
-        //  parent[0] = object;
-        //this.currentOffset = offset;
-        // keyArray = new long[(2 * degree) - 1];
-        // children = new long[2 * degree];
-        // frequency = new long[(2 * degree) - 1];
         isLeaf = false;
         size = 0;
-        //child = new BTreeNode[2 * degree];
-        //parent = new BTreeNode[(2 * degree) - 1];
-        //this.degree = degree;
+    }
 
+    public void setOffSet(long offSet) {
+        this.offSet = offSet;
+    }
+
+    public long getOffSet() {
+        return this.offSet;
+    }
+
+    public int getChildrenCount() {
+        return child.length;
+    }
+
+    public int getParentCount() {
+        return parent.length;
     }
 
     public void setParentNode(BTreeNode parentNode) {
@@ -74,22 +83,31 @@ public class BTreeNode<T> {
           return child[i]..getFrequancy();
       }
   */
-    public void setFrequancy(int i) {
-        parent[i].increaseFrequancy();
-    }
+    // public void setFrequancy(int i) {
+    //      parent[i].setFrequancy(i);
+    //   }
 
     public void setParentFrequancy(int i, int freq) {
         parent[i].setFrequancy(freq);
     }
 
-    public void setChildFrequancy(int i, int freq) {
-        child[i].setFrequancy(freq);
+    public void incrementParentFrequancy(int i) {
+        parent[i].increaseFrequancy();
     }
 
-    /*   public long getParentOffset() {
+
+    // public void setChildFrequancy(int i, int freq) {
+    //    child[i].setFrequancy(freq);
+    // }
+
+    public long getParentOffset() {
            return parentOffset;
        }
-   */
+
+    public void setParentOffset(long parentOffset) {
+        this.parentOffset = parentOffset;
+    }
+
     public Boolean getLeaf() {
         return isLeaf;
     }

@@ -3,57 +3,75 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 
-
 public class GeneticFileConstructor {
 
+    protected RandomAccessFile bTreeFile, dump, searchTree;
 
-    protected RandomAccessFile bTreeFileData, dump, treeSearch;
-
-
+    private int sequenceLength;
+    final int maxnodeSize = 4096;
+    private String bTreeFileName;
+    private boolean canWrite;
+    final int metadata = 16;
+    final int parentPointer = 8;
     private long rootLocation;
     private int degree;
     final int frequency = 8;
     final int objectSize = 8;
     final int childrenPointer = 8;
-    private int lengthOfSequence;
-    final int maximumDataNodeSize = 4096;
-    private String bTreeFileName;
-    private TreeObject object;
-
-    private boolean writeCheck;
-    final int metadata = 16;
-    final int parentPointer = 8;
-
 
     /**
+     *
+     * @param dataFile
+     * @throws IOException
+     */
+    public GeneticFileConstructor(File dataFile) throws IOException {
+        File treeData = dataFile;
+        bTreeFile = new RandomAccessFile(treeData, "r");
+        canWrite = false;
+    }
+
+    /**
+     *
+     * @param dataFile
+     * @param cacheSize
+     * @throws IOException
+     */
+    public GeneticFileConstructor(File dataFile, int cacheSize) throws IOException {
+        File treeData = dataFile;
+
+        canWrite = false;
+        bTreeFile = new RandomAccessFile(treeData, "r");
+    }
+
+    /**
+     *
      * @param dataFile
      * @param degree
      * @param sequenceLength
      * @throws IOException
      */
     public GeneticFileConstructor(String dataFile, int degree, int sequenceLength) throws IOException {
+        this.degree = degree;
+        this.sequenceLength = sequenceLength;
 
+        canWrite = true;
+        this.bTreeFileName = dataFile + ".btree.data." + this.sequenceLength + "." + this.degree;
         File datafile = new File(bTreeFileName);
-        bTreeFileData = new RandomAccessFile(datafile, "rw");
-        writeCheck = true;
-        this.bTreeFileName = dataFile + ".btree.data." + this.lengthOfSequence + "." + this.degree;
-
-        degree = degree;
-        lengthOfSequence = sequenceLength;
+        bTreeFile = new RandomAccessFile(datafile, "rw");
         rootLocation = metadata;
     }
 
     /**
-     * @param dataFile
+     *
      * @throws IOException
      */
-    public GeneticFileConstructor(File dataFile) throws IOException {
-        File treeData = dataFile;
-        bTreeFileData = new RandomAccessFile(treeData, "r");
-        writeCheck = false;
+    public GeneticFileConstructor() throws IOException {
+        File dumpFile = new File("dump");
+        dump = new RandomAccessFile(dumpFile, "rw");
     }
 
     /**
+     *
      * @param dataFile
      * @param degree
      * @param sequenceLength
@@ -62,114 +80,60 @@ public class GeneticFileConstructor {
      */
     public GeneticFileConstructor(String dataFile, int degree, int sequenceLength, int cacheSize) throws IOException {
         this.degree = degree;
-        this.lengthOfSequence = sequenceLength;
+        this.sequenceLength = sequenceLength;
 
-        writeCheck = true;
-        this.bTreeFileName = dataFile + ".btree.data." + this.lengthOfSequence + "." + this.degree;
+        canWrite = true;
+        this.bTreeFileName = dataFile + ".btree.data." + this.sequenceLength + "." + this.degree;
         File datafile = new File(bTreeFileName);
-
-        bTreeFileData = new RandomAccessFile(datafile, "rw");
+        bTreeFile = new RandomAccessFile(datafile, "rw");
         rootLocation = metadata;
     }
 
     /**
-     * @throws IOException
-     */
-    public GeneticFileConstructor() throws IOException {
-        File fDump = new File("dump");
-
-        dump = new RandomAccessFile(fDump, "rw");
-    }
-
-    /**
-     * @param dataFile
-     * @param cacheSize
-     * @throws IOException
-     */
-    public GeneticFileConstructor(File dataFile, int cacheSize) throws IOException {
-        File treeData = dataFile;
-
-        writeCheck = false;
-
-        bTreeFileData = new RandomAccessFile(treeData, "r");
-    }
-
-
-    /**
-     * Finds the root of the tree file
-     *
-     * @return returnVal
+     * Find the root
+     * @return retVal
      * @throws IOException
      */
     public long rootFinder() throws IOException {
-
-        bTreeFileData.seek(0);
-        long returnVal = bTreeFileData.readLong();
-
-        return returnVal;
+        bTreeFile.seek(0);
+        long retVal = bTreeFile.readLong();
+        return retVal;
     }
 
     /**
+     *
      * @throws IOException
      */
     public void writeToTreeMetaData() throws IOException {
-        bTreeFileData.writeLong(rootLocation);
-        bTreeFileData.writeInt(degree);
 
-        bTreeFileData.writeInt(lengthOfSequence);
-
-        bTreeFileData.seek(0);
-
+        bTreeFile.seek(0);
+        bTreeFile.writeLong(rootLocation);
+        bTreeFile.writeInt(this.degree); // t
+        bTreeFile.writeInt(this.sequenceLength); // k
     }
 
     /**
      * This will get the sequence length
-     *
-     * @return returnVal
+     * @return retVal
      * @throws IOException
      */
     public int getLengthOfSequence() throws IOException {
-        bTreeFileData.seek(12);
-
-        int returnVal = bTreeFileData.readInt();
-        return returnVal;
+        int retVal;
+        bTreeFile.seek(12);
+        retVal = bTreeFile.readInt();
+        return retVal;
     }
 
     /**
      * This will get the degree
-     *
      * @return retVal
      * @throws IOException
      */
     public int getDegree() throws IOException {
-        bTreeFileData.seek(8);
-
-        int retVal = bTreeFileData.readInt();
+        int retVal;
+        bTreeFile.seek(8);
+        retVal = bTreeFile.readInt();
         return retVal;
-    }
-
-
-    /**
-     * This will update the root location
-     *
-     * @param rootOffset
-     * @throws IOException
-     */
-    public void updateLocationOfRoot(long rootOffset) throws IOException {
-        this.rootLocation = rootOffset;
-        bTreeFileData.seek(0);
-        bTreeFileData.writeLong(rootLocation);
-    }
-
-    /**
-     * @param degree
-     */
-    public void setDegree(int degree) {
-        this.degree = degree;
-    }
-
-    public String getFileName() {
-        return this.bTreeFileName;
     }
 
     /**
@@ -183,85 +147,92 @@ public class GeneticFileConstructor {
     }
 
     /**
+     * This will update the root location
+     * @param rootOffset
+     * @throws IOException
+     */
+    public void updateLocationOfRoot(long rootOffset) throws IOException {
+        this.rootLocation = rootOffset;
+        bTreeFile.seek(0);
+        bTreeFile.writeLong(rootLocation);
+    }
+
+    /**
      * This method will read data
-     *
      * @param nodeOffset
      * @return
      * @throws IOException
      */
     public BTreeNode readData(long nodeOffset) throws IOException {
-        BTreeNode returnNode;
+        BTreeNode retNode;
 
-        returnNode = readMetaData(nodeOffset);
-        return returnNode;
+        retNode = readMetaData(nodeOffset);
+        return retNode;
     }
 
     /**
      * This method will write to file
-     *
      * @param node
      * @throws IOException
      */
     public void writeMetaDataToFile(BTreeNode node) throws IOException {
 
-        BTreeNode writenNode = node;
+        bTreeFile.seek(node.getOffSet());
+        bTreeFile.writeLong(node.getOffSet());
 
-        //  bTreeFileData.seek(writenNode.getOffset());
+        bTreeFile.writeInt(node.getSize());
+        bTreeFile.writeBoolean(node.getLeaf());
 
-        // bTreeFileData.writeLong(writenNode.getOffset());
-
-        //bTreeFileData.writeInt(writenNode.getSize());
-
-        //bTreeFileData.writeBoolean(writenNode.getLeaf());
-
-        for (int i = 0; i < writenNode.getSize(); i++) {
-            bTreeFileData.writeLong(writenNode.getParentValue(i));
+        for (int i = 0; i < node.getSize(); i++) {
+            bTreeFile.writeLong(node.getParentValue(i));
+            bTreeFile.writeInt(node.getParentFrequancy(i));
         }
-        for (int i = 0; i < writenNode.getSize(); i++) {
-            bTreeFileData.writeLong(writenNode.getParentFrequancy(i));
+        for (int i = 0; i <= node.getSize(); i++) {
+            if (node.getChild(i) == null) {
+                bTreeFile.writeLong(0);
+                bTreeFile.writeInt(0);
+            } else {
+                for (int j = 0; j < node.getChild(i).getSize(); j++) {
+                    bTreeFile.writeLong(node.getChild(i).getParentValue(j));
+                    bTreeFile.writeInt(node.getChild(i).getParentFrequancy(j));
+                }
+            }
         }
-        for (int i = 0; i < writenNode.getSize() + 1; i++) {
-            if (writenNode.getChild(i) != null)
-                writeMetaDataToFile(writenNode.getChild(i));
-            //  bTreeFileData.writeLong(writenNode.getChild(i));
-        }
-        //  bTreeFileData.writeLong(writenNode.parentNode.getParentOffset());
+        bTreeFile.writeLong(node.getParentOffset());
     }
 
     /**
      * This method reads from file
-     *
      * @param nodeOffset
      * @return
      * @throws IOException
      */
     public BTreeNode readMetaData(long nodeOffset) throws IOException {
 
-        bTreeFileData.seek(nodeOffset);
-        BTreeNode returnNode = new BTreeNode(degree);
-        object = new TreeObject(nodeOffset, 1);
-        returnNode.setParent(0, object);
-        returnNode.setSize(bTreeFileData.readInt());
-        returnNode.setLeaf(bTreeFileData.readBoolean());
+        bTreeFile.seek(nodeOffset);
+        BTreeNode retNode = new BTreeNode(degree);
+        retNode.setOffSet(bTreeFile.readLong());
+        retNode.setSize(bTreeFile.readInt());
+        retNode.setLeaf(bTreeFile.readBoolean());
 
-        for (int i = 0; i < ((2 * degree) - 1); i++) {
-            TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), 1);
-
-            returnNode.setParent(i, parentNode);
-
+        for (int i = 0; i < retNode.getSize(); i++) {
+            TreeObject temp = new TreeObject(bTreeFile.readLong(), bTreeFile.readInt());
+            retNode.setParent(i, temp);
         }
-        for (int i = 0; i < (2 * degree); i++) {
-            BTreeNode newNode = new BTreeNode(degree);
-            TreeObject childNode = new TreeObject(bTreeFileData.readLong(), 1);
-            newNode.setParent(0, childNode);
-            returnNode.setChild(i, newNode);
+        for (int i = 0; i <= retNode.getSize(); i++) {
+            BTreeNode child = new BTreeNode(degree);
+            for (int j = 0; j < retNode.getSize() + 1; j++) {
+                TreeObject temp = new TreeObject(bTreeFile.readLong(), bTreeFile.readInt());
+                child.setParent(j, temp);
+            }
+            retNode.setChild(i,child);
         }
-        TreeObject parentNode = new TreeObject(bTreeFileData.readLong(), 1);
-
-        return returnNode;
+        retNode.setParentOffset(bTreeFile.readLong());
+        return retNode;
     }
 
     /**
+     *
      * @throws IOException
      */
     public void writeDump() throws IOException {
@@ -269,7 +240,14 @@ public class GeneticFileConstructor {
         dump = new RandomAccessFile(dumpFile, "rw");
     }
 
+    /**
+     * @param degree
+     */
+    public void setDegree(int degree) {
+        this.degree = degree;
+    }
 
+    public String getFileName() {
+        return this.bTreeFileName;
+    }
 }
-
-

@@ -40,7 +40,7 @@ public class GeneBankCreateBTree {
             }
             // Print insertion progress
 
-            if (insertCount % 100 == 0) {
+            if (insertCount % 50 == 0) {
                 System.out.println("..." + insertCount + " sequences inserted...");
             }
         }
